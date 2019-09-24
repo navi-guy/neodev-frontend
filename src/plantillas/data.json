@@ -1,0 +1,21 @@
+
+
+[	{ 
+	"id"   : 0,
+	"title": "GTIC",
+	"grado": 1,
+	"desc" : "Maestría en Ingeniería de Sistemas e Informática en GTIC"
+	},
+	{ 
+	"id" : 1,
+	"title": "DISI",
+	"grado" : 2,
+	"desc" : "Doctorado en Ingeniería de Sistemas e Informática en DISI"
+	},
+	{ 
+	"id" : 2,
+	"title": "ASTI",
+	"grado" : 3,
+	"desc" : "Diplomado en Ingeniería de Sistemas e Informática en ASTI"
+	}
+]

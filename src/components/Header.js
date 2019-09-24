@@ -1,33 +1,36 @@
-import React, {Component} from 'react';
-import data from './data.json';
+import React,  { useState } from 'react';
+import data from '../plantillas/data.json';
 
-console.log(data);
-class Header extends Component {
-	state = {
-		show: true
+const Header = () => {
+	const [programaId , setProgramaId] = useState(-1);
+	const [ description , setDescription ] = useState(' ');
+	const handleProgramaIdChange = (e) => {
+		setProgramaId(Number(e.target.value));
+		if( Number(e.target.value) !== -1 ){
+			const description = data[Number(e.target.value)].desc;
+			setDescription(description);	
+		} else{
+			setDescription(' xd ');
+		}
+	
 	}
-	toggleShow = () => {
-		this.setState({show: !this.state.show });
-		console.log(this.state.show);
-
-	}
-	//console.log(state.show);
-	render(){
 		return (
-				<div className="container">
-					<h1>&bull; {this.props.mytext} &bull; 
-						<button className="btn btn-info" onClick={this.toggleShow}> 
-							Toggle Show
-						</button>
+				<div className="container">			
+					<h1>&bull; HELLO GAAA &bull; 						
 					</h1>
 					<div className="row">
 						<div className="col-md-4">			 
 							<div className="subject form-group">
 							  <label >Escoja un programa</label>
-							    <select className="form-control"  required>
-							        <option>GTIC</option>
-							        <option>DISI</option>
-							        <option>ASTI</option>
+							    <select className="form-control"  value={programaId} 
+							    	onChange={handleProgramaIdChange}>
+							    		<option value="-1" default> Selecciona un prgrama</option>							    					      
+											{
+												data.map( (programa) => 
+													<option key={programa.id} value={programa.id}> 
+														{programa.title}
+													</option>)
+											}  
 							    </select>
 							</div>
 			
@@ -43,7 +46,7 @@ class Header extends Component {
 							<div className="subject form-group">
 							  <label >Programa descripción</label>
 							    <textarea name="" id="" cols="10" className="form-control" rows="3" 
-							    readOnly value="Maestría en Ingeniería de Sistemas e Informática en GTIC">					    
+							    readOnly value={description}>								    			    
 							    </textarea>
 							</div>
 			
@@ -57,9 +60,8 @@ class Header extends Component {
 						</div>							
 					</div>
 				</div>
-			)
+			) 
 	}
-  
-}
+
 
 export default Header;

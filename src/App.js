@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
 import './App.css';
-import Header from './Header';
-import Table from './Table';
+import Header from './components/Header';
+import Table from './components/Table';
 
 class App extends Component {
 	render(){
 		return (
 			<div className="App">
-				<Header  mytext="Hello gaa"></Header>
-				<Table />
-
+				<Header/>
+				<Table />			
 			</div>
 			)
 	}
