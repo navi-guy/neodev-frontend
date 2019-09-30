@@ -1,67 +1,183 @@
-import React,  { useState } from 'react';
-import data from '../plantillas/data.json';
+import React,{Component} from 'react';
+import axios from 'axios';
+import * as Forms from './forms';
+import Create from './Create';
 
-const Header = () => {
-	const [programaId , setProgramaId] = useState(-1);
-	const [ description , setDescription ] = useState(' ');
-	const handleProgramaIdChange = (e) => {
-		setProgramaId(Number(e.target.value));
-		if( Number(e.target.value) !== -1 ){
-			const description = data[Number(e.target.value)].desc;
-			setDescription(description);	
-		} else{
-			setDescription(' xd ');
+
+class Header extends Component {
+	constructor(){
+		super();
+		this.state = {
+			programas : [],
+			programa_selected : -1,
+			description: "gaa",
+			programaciones: [],
+			programacion_selected: -1,
+			tipo_grado: "-1",
+			tipo_p_selected: -1,
+			costo_name: ""
 		}
-	
+	this.handleProgramaChange = this.handleProgramaChange.bind(this);  
+	this.handleProgramacionChange = this.handleProgramacionChange.bind(this);  
+	this.handleTipoPresupuestoChange = this.handleTipoPresupuestoChange.bind(this); 
 	}
+	handleProgramacionChange(e) {
+	  this.setState( {programacion_selected: Number(e.target.value) } );
+	}
+
+	handleTipoPresupuestoChange(e) {
+	  this.setState( {tipo_p_selected: Number(e.target.value) } );
+	  if( Number(e.target.value) !== -1 ){	  	
+			Number(e.target.value)  === 1 ? 
+  		this.setState( {costo_name: "CICLO" } ):this.setState( {costo_name: "CREDITO" } );	
+	  }  else{
+	  	this.setState( {costo_name: "" } )
+	  }
+	}
+
+	handleProgramaChange(e) {
+	  this.setState( {programa_selected: Number(e.target.value) } );	  
+		if( Number(e.target.value) !== -1 ){
+			this.state.programas.forEach( (programa) =>{				
+				if( programa.id === Number(e.target.value) ){
+			  	this.setState( {description: programa.nombrePrograma } );
+			  	this.setState( {tipo_grado: programa.tipoGrado.id } ); 
+			  }
+			});		
+ 	  }else{
+ 	  	this.setState( {description: "selecciona pes" } );	
+ 	  	this.setState( {tipo_grado: -1 } );
+ 	  }
+	}
+
+	componentDidMount(){
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programas')
+		.then(response => {
+			this.setState({ programas: response.data })			
+		})
+		.catch( error =>{ console.log(error) 
+		});
+
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programacion_pagos')
+		.then(response => {
+			this.setState({ programaciones: response.data })			
+		})
+		.catch( error =>{ console.log(error) 
+		});		
+	}
+	
+	
+	render(){
+		//console.log(Forms["Matricula"])
+		//console.log(this.state.tipo_p_selected);		
 		return (
 				<div className="container">			
-					<h1>&bull; HELLO GAAA &bull; 						
+					<h1>&bull; RF21-Registrar Costos de Programas &bull; 						
 					</h1>
+						
 					<div className="row">
-						<div className="col-md-4">			 
+						<div className="col-md-2">			 
 							<div className="subject form-group">
 							  <label >Escoja un programa</label>
-							    <select className="form-control"  value={programaId} 
-							    	onChange={handleProgramaIdChange}>
-							    		<option value="-1" default> Selecciona un prgrama</option>							    					      
+							    <select className="form-control"  value={this.state.programa_selected} 
+							    	onChange={this.handleProgramaChange}>
+							    		<option value="-1" default>Choose</option>							    					      
 											{
-												data.map( (programa) => 
+												this.state.programas.map( (programa) => 
 													<option key={programa.id} value={programa.id}> 
-														{programa.title}
+														{programa.siglaPrograma}
 													</option>)
 											}  
 							    </select>
-							</div>
-			
-						</div> 	
-						<div className="col-md-2">
-							<div className="form-group">
-								<label htmlFor="costo_credito">Costo crédito</label>
-								<input type="number" className="form-control"/>					
-							</div>
-							
+							</div>			
 						</div>
-						<div className="col-md-4">			 
+						<div className="col-md-8">			 
 							<div className="subject form-group">
 							  <label >Programa descripción</label>
-							    <textarea name="" id="" cols="10" className="form-control" rows="3" 
-							    readOnly value={description}>								    			    
+							    <textarea name="" id="" cols="10" className="form-control" rows="2" 
+							    readOnly value={this.state.description}>								    			    
 							    </textarea>
-							</div>
-			
-						</div> 	
+							</div>			
+						</div>
+
+						<div className="col-md-2">
+							<div className="form-group ">
+								<label htmlFor="costo_credito"> Costo Total</label>
+								<input type="text" value="S/. 322.00" className="form-control bg-info text-white" readOnly/>					
+							</div>							
+						</div>
+					</div>
+					<div className="row">
+						<div className="col-md-8">			 
+							<div className="subject form-group">
+							  <label >Escoja la programación de pagos </label>
+							    <select className="form-control"  value={this.state.programacion_selected} 
+							    	onChange={this.handleProgramacionChange}>
+							    		<option value="-1" default>Choose</option>							    					      
+											{
+												this.state.programaciones.map( (programa) => 
+													<option key={programa.id} value={programa.id}> 
+														{programa.fechaVigenciaInicio.concat(" hasta "+programa.fechaVigenciaFin) }
+													</option>)
+											}  
+							    </select>
+							</div>			
+						</div>	
 						<div className="col-md-2">
 							<div className="form-group">
-								<label htmlFor="costo_credito">Costo total</label>
-								<input type="text" className="form-control" value="S/. 322.00" readOnly />	
-							</div>
-											
-						</div>							
+								<label htmlFor="tipo_presupuesto"> Tipo Presupuesto</label>
+									<select className="form-control" value={this.state.tipo_p_selected} 
+							    	onChange={this.handleTipoPresupuestoChange}>
+							    		<option value="-1" default>Choose</option>						    					      
+											<option value="1">Ciclo</option>		
+											<option value="2">Crédito</option>																														
+							    </select>			
+							</div>							
+						</div>
+						<div className="col-md-2">
+							<div className="form-group">
+								<label htmlFor="costo_credito">Costo 
+								 {" "+this.state.costo_name}
+								</label>
+								<input type="text" className="form-control" placeholder={`Costo ${this.state.costo_name}`}/>	
+							</div>											
+						</div>									
+					</div>	
+					<div className="row">
+						<div className="col-md-12">
+							<Create />
+						</div>												
+					</div>	
+					< br />
+					<div className="row">
+						<div className="col-md-12">
+							{this.renderSelectedForm(this.state.tipo_grado)}
+						</div>												
+					</div>
+					< br />
+					<div className="row">
+						<div className="col-md-12">
+							{this.renderSelectedForm2()}
+						</div>												
 					</div>
 				</div>
 			) 
-	}
+		}
+renderSelectedForm( tipo_grado ){
+	 //console.log(tipo_grado);
 
+		if( tipo_grado !== "06" ){
+			const Formulario = Forms["Matricula"];
+			return <Formulario />
+		}		
+		
+	}
+renderSelectedForm2(){
+		const Formulario = Forms["Perfeccionamiento"];
+		return <Formulario />		
+	}
+}
+
+	
 
 export default Header;

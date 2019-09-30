@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import TableMatricula from './TableMatricula';
+import Matricula from './Matricula';
 
 class Table extends Component {
 	constructor(props) {
@@ -55,7 +55,7 @@ class Table extends Component {
 					      			</div>					      			
 					      		</div>					      		
 					      	</div>
-								<TableMatricula />
+								<Matricula />
 					      </div>
 					    </div>
 					  </div>
