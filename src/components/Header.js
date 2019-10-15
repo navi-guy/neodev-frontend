@@ -2,7 +2,12 @@ import React,{Component} from 'react';
 import axios from 'axios';
 import * as Forms from './forms';
 import Create from './Create';
+import Select from 'react-select';
 
+const optionsTipoPresupuesto=[
+		{value: 1 , label: 'CICLO'},
+		{value: 2 , label: 'CREDITO'}
+	];
 
 class Header extends Component {
 	constructor(){
@@ -15,25 +20,41 @@ class Header extends Component {
 			programacion_selected: -1,
 			tipo_grado: "-1",
 			tipo_p_selected: -1,
-			costo_name: ""
+			costo_name: "",
+			selectedOption: null,
 		}
 	this.handleProgramaChange = this.handleProgramaChange.bind(this);  
 	this.handleProgramacionChange = this.handleProgramacionChange.bind(this);  
 	this.handleTipoPresupuestoChange = this.handleTipoPresupuestoChange.bind(this); 
 	}
+
+
 	handleProgramacionChange(e) {
 	  this.setState( {programacion_selected: Number(e.target.value) } );
 	}
 
 	handleTipoPresupuestoChange(e) {
-	  this.setState( {tipo_p_selected: Number(e.target.value) } );
-	  if( Number(e.target.value) !== -1 ){	  	
-			Number(e.target.value)  === 1 ? 
-  		this.setState( {costo_name: "CICLO" } ):this.setState( {costo_name: "CREDITO" } );	
-	  }  else{
-	  	this.setState( {costo_name: "" } )
-	  }
+		console.log(e.target);
+	  //  this.setState( {tipo_p_selected: Number(e.target.value) } );
+
+	  // if( Number(e.target.value) !== -1 ){	  	
+			// Number(e.target.value)  === 1 ? 
+  	// 	:this.setState( {costo_name: "CREDITO" } );	
+	  // }  else{
+	  // 	this.setState( {costo_name: "" } )
+	  // }
 	}
+ 	handleChange = selectedOption => {
+	    this.setState({ selectedOption });
+	    if(selectedOption !== null){
+ 			selectedOption.value === 1 ? 
+		    	this.setState( {costo_name: "CICLO" } ):		    
+		    	this.setState( {costo_name: "CREDITO" } );	    
+	    }else{
+	    	this.setState( {costo_name: "" } )
+	    }
+		   
+  	};
 
 	handleProgramaChange(e) {
 	  this.setState( {programa_selected: Number(e.target.value) } );	  
@@ -69,7 +90,8 @@ class Header extends Component {
 	
 	render(){
 		//console.log(Forms["Matricula"])
-		//console.log(this.state.tipo_p_selected);		
+		//console.log(this.state.tipo_p_selected);	
+		const { selectedOption } = this.state;	
 		return (
 				<div className="container">			
 					<h1>&bull; RF21-Registrar Costos de Programas &bull; 						
@@ -78,7 +100,7 @@ class Header extends Component {
 					<div className="row">
 						<div className="col-md-2">			 
 							<div className="subject form-group">
-							  <label >Escoja un programa</label>
+							  <label ><b>Escoja un programa</b></label>
 							    <select className="form-control"  value={this.state.programa_selected} 
 							    	onChange={this.handleProgramaChange}>
 							    		<option value="-1" default>Choose</option>							    					      
@@ -93,7 +115,7 @@ class Header extends Component {
 						</div>
 						<div className="col-md-8">			 
 							<div className="subject form-group">
-							  <label >Programa descripción</label>
+							  <label > <b>Programa descripción</b> </label>
 							    <textarea name="" id="" cols="10" className="form-control" rows="2" 
 							    readOnly value={this.state.description}>								    			    
 							    </textarea>
@@ -102,7 +124,7 @@ class Header extends Component {
 
 						<div className="col-md-2">
 							<div className="form-group ">
-								<label htmlFor="costo_credito"> Costo Total</label>
+								<label htmlFor="costo_credito"><b>Costo Total</b> </label>
 								<input type="text" value="S/. 322.00" className="form-control bg-info text-white" readOnly/>					
 							</div>							
 						</div>
@@ -110,7 +132,7 @@ class Header extends Component {
 					<div className="row">
 						<div className="col-md-8">			 
 							<div className="subject form-group">
-							  <label >Escoja la programación de pagos </label>
+							  <label ><b>Escoja la programación de pagos</b> </label>
 							    <select className="form-control"  value={this.state.programacion_selected} 
 							    	onChange={this.handleProgramacionChange}>
 							    		<option value="-1" default>Choose</option>							    					      
@@ -125,18 +147,18 @@ class Header extends Component {
 						</div>	
 						<div className="col-md-2">
 							<div className="form-group">
-								<label htmlFor="tipo_presupuesto"> Tipo Presupuesto</label>
-									<select className="form-control" value={this.state.tipo_p_selected} 
-							    	onChange={this.handleTipoPresupuestoChange}>
-							    		<option value="-1" default>Choose</option>						    					      
-											<option value="1">Ciclo</option>		
-											<option value="2">Crédito</option>																														
-							    </select>			
+								<label htmlFor="tipo_presupuesto"><b>Tipo Presupuesto</b> </label>
+								<Select className="" value={selectedOption}
+									isClearable isSearchable
+        							onChange={this.handleChange} 
+							    	options={optionsTipoPresupuesto} />
+							    																															
+							    			
 							</div>							
 						</div>
 						<div className="col-md-2">
 							<div className="form-group">
-								<label htmlFor="costo_credito">Costo 
+								<label htmlFor="costo_credito"> <b> Costo</b> 
 								 {" "+this.state.costo_name}
 								</label>
 								<input type="text" className="form-control" placeholder={`Costo ${this.state.costo_name}`}/>	
@@ -149,11 +171,14 @@ class Header extends Component {
 						</div>												
 					</div>	
 					< br />
-					<div className="row">
+					<div className="container">
+						<div className="row">
 						<div className="col-md-12">
 							{this.renderSelectedForm(this.state.tipo_grado)}
 						</div>												
 					</div>
+					</div>
+					
 					< br />
 					<div className="row">
 						<div className="col-md-12">
