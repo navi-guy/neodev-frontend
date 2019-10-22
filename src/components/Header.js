@@ -82,14 +82,14 @@ class Header extends Component {
 	}
 
 	componentDidMount(){
-		axios.get('http://costoprogramas-back.herokuapp.com/programas')
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programas')
 		.then(response => {
 			this.setState({ programas: response.data })			
 		})
 		.catch( error =>{ console.log(error) 
 		});
 
-		axios.get('http://costoprogramas-back.herokuapp.com/programacion_pagos')
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programacion_pagos')
 		.then(response => {
 			this.setState({ programaciones: response.data })			
 		})
