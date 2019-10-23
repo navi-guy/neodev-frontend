@@ -60,19 +60,21 @@ class Create extends Component {
 	    
 	    this.setState( {selectedOptionConcepto: e.target.value } );
 	    	if( Number(e.target.value) !== -1 ){
-	    	if( e.target.value === 1 || e.target.value === 3){
-					this.setState({ readOnly: false });
-				 }else{
-					this.setState({ readOnly: true });
-				}			
-				optionsConcepto.forEach( (programa) =>{				
-					if( programa.id === Number(e.target.value) ){
-				  	this.setState( {descripcion: programa.value } );				  	
-				  }
-				});		
-		 	  }else{		 	  	
-		 	  	this.setState( {descripcion: "" } ); 	 	
-		 	  }
+	    		//console.log(e.target.value);
+		    	if( Number(e.target.value) === 1 || Number(e.target.value) === 3){
+		    		//console.log(e.target.value);
+						this.setState({ readOnly: false });
+					 }else{
+						this.setState({ readOnly: true });
+					}			
+					optionsConcepto.forEach( (programa) =>{				
+						if( programa.id === Number(e.target.value) ){
+					  	this.setState( {descripcion: programa.value } );				  	
+					  }
+					});		
+			 	  }else{		 	  	
+			 	  	this.setState( {descripcion: "" } ); 	 	
+			 	  }
   
   };	
 	render(){	
@@ -156,7 +158,7 @@ class Create extends Component {
 	}
 
 	renderSelectedForm( concepto ){
-		if(concepto === 2 || concepto === 4 ){
+		if(Number(concepto) === 2 || Number(concepto) === 4 ){
 				//console.log('ingreso!');
 					const Formulario = Forms["Creditos"];
 					return <Formulario />
