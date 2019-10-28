@@ -69,7 +69,7 @@ class Header extends Component {
 			        importe: importeCalculado       // update the value of specific key
 			    }
 			}));
-			console.log(importeCalculado)
+		//	console.log(importeCalculado)
 
 		}
 		//para cambios en concepto
@@ -99,9 +99,25 @@ class Header extends Component {
 	//	this.state.readOnlyBtn
 	}
 
-	handleSubmit = e =>{
+	handleSubmit = async e =>{
 		e.preventDefault()
 		console.log(this.state.form)
+		try{
+			let config = {
+				method: 'POST',
+				headers:{
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(this.state.form)
+			}
+			let response = await
+			fetch('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/presupuesto_store',config)
+			let json = await response.json()
+			console.log(json);
+		}catch( error ){
+			console.log('ERROR..')
+		}
 
 	}
 
