@@ -4,31 +4,20 @@ import axios from 'axios';
 import * as Forms from './forms';
 
 const optionsConcepto=[
-		{id: 1, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},
-		{id: 2, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},	
-		{id: 3, label: '207-010' , value: 'MATRICULA EPG'}	,
-		{id: 4, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	
+		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
+		{id: 21, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},	//2		
+		{id: 62, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	//4
+		{id: 117, label: '207-010' , value: 'MATRICULA EPG'}	,//3
 	];
-// const optionsConcepto2=[
-// 		{label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'}		
-// 	];
-	//para el tipo de grado 3
-// const optionsCiclo=[
-// 		{label: '1' , value: '1'},
-// 		{label: '2' , value: '2'},
-// 		{label: '3' , value: '3'},
-// 		{label: '4' , value: '4'}
-// 	];
+
 class Create extends Component {
 	constructor(){
 		super();
 		this.state = {
 			selectedOptionConcepto: -1,
 			programa_ciclos: [],
-			// readOnly: true,
 			selectedOptionCiclo: null,
-			descripcion: "",
-			readOnly: true,
+			descripcion: "",		
 			ciclo_selected: -1
 		}
 		this.handleProgramaCicloChange = this.handleProgramaCicloChange.bind(this);  
@@ -52,34 +41,21 @@ class Create extends Component {
 				
 	}
 
+	handleChangeImporte = e =>{
+		this.props.setState({
+			form: {
+				...this.state.form,
+				[e.target.name]: e.target.value
+			}
+		});
+	}
+
  	handleChangeCiclo = selectedOptionCiclo => {
 	    this.setState({ selectedOptionCiclo });   
   	};
 
- 	handleChangeConcepto = e => {
-	    
-	    this.setState( {selectedOptionConcepto: e.target.value } );
-	    	if( Number(e.target.value) !== -1 ){
-	    		//console.log(e.target.value);
-		    	if( Number(e.target.value) === 1 || Number(e.target.value) === 3){
-		    		//console.log(e.target.value);
-						this.setState({ readOnly: false });
-					 }else{
-						this.setState({ readOnly: true });
-					}			
-					optionsConcepto.forEach( (programa) =>{				
-						if( programa.id === Number(e.target.value) ){
-					  	this.setState( {descripcion: programa.value } );				  	
-					  }
-					});		
-			 	  }else{		 	  	
-			 	  	this.setState( {descripcion: "" } ); 	 	
-			 	  }
-  
-  };	
+
 	render(){	
-	//const { selectedOptionConcepto } = this.state;
-	// const { selectedOptionCiclo } = this.state;	
 		return (
 		<div className="container">
 			<div className="row">
@@ -90,16 +66,17 @@ class Create extends Component {
 					  		<div className="col-md-4">
 					  			<div className="subject form-group">
 									  <label><b> Trámite</b></label>
-									  <input type="text" value={this.state.descripcion}
+									  <input type="text" value={this.props.concepto}
 									  className="form-control" readOnly/>									    
 									</div>								
 					  		</div>
 					  		<div className="col-md-2">
 					  			<div className="form-group"> 
 					  				<label><b> Concepto</b></label>
-					  				<select className="form-control" readOnly={this.props.readOnly}
-					  				 value={this.state.selectedOptionConcepto} 
-								    	onChange={this.handleChangeConcepto}>
+					  				<select className="form-control" name="id_concepto"
+					  				disabled={this.props.readOnly}
+					  				 value={this.props.id_concepto} 
+								    	onChange={this.props.onChange}>
 								    	<option value="-1" default>Choose</option>							    					      
 												{
 												 optionsConcepto.map( (ciclo) => 
@@ -114,9 +91,9 @@ class Create extends Component {
 					  		<div className="col-md-2">
 					  			<div className="form-group"> 
 					  				<label><b> Ciclo</b></label>
-					  				<select className="form-control"  value={this.state.ciclo_selected} 
-								    	onChange={this.handleProgramaCicloChange}>
-								    		<option value="-1" default>Choose</option>							    					      
+					  				<select className="form-control"  name="id_programa_ciclo"
+					  				value={this.props.form.id_programa_ciclo} 
+								    	onChange={this.props.onChange} required disabled={this.props.readOnly}>								    								    					      
 												{
 													this.state.programa_ciclos.map( (ciclo) => 
 														<option key={ciclo.id} value={ciclo.id}> 
@@ -129,18 +106,21 @@ class Create extends Component {
 					  		<div className="col-md-2">
 						  		<div className="subject form-group">
 										<label><b> Importe</b></label>
-										<input type="text"  placeholder=""
-										  className="form-control" readOnly={this.state.readOnly} />									    
+										
+										<input type="text"  placeholder="" name="importe"
+										  className="form-control" value={this.props.form.importe} 
+										  onChange={this.props.onChange}
+										   readOnly={this.props.readOnlyImporte} required/>									    
 									</div>					  			
 					  		</div>
 					  		<div className="col-md-2">
-					  		{this.renderSelectedForm(this.state.selectedOptionConcepto)}						  							  			
+					  		{this.renderSelectedForm(this.props.form.id_concepto)}						  							  			
 					  		</div>					  		
 					  	</div>{/* end.row*/}
 					  	<div className="row">
 					  		<div className="col-md-12">
 					  			<div className=" float-right">
-					  				<button className="btn btn-success " disabled={this.props.readOnly}>
+					  				<button className="btn btn-success " type="submit" disabled={this.props.readOnlyBtn}>
 										Guardar
 									</button> &nbsp;
 									<button className="btn btn-danger">
@@ -158,13 +138,10 @@ class Create extends Component {
 	}
 
 	renderSelectedForm( concepto ){
-		if(Number(concepto) === 2 || Number(concepto) === 4 ){
+		if(Number(concepto) === 21 || Number(concepto) === 62 ){
 				//console.log('ingreso!');
 					const Formulario = Forms["Creditos"];
-					return <Formulario />
-				}
-				else{
-					//console.log('no ingresó');
+					return <Formulario form={this.props.form.creditos} onChange={this.props.onChange}/>
 				}
 	 }
 }

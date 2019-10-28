@@ -3,32 +3,37 @@ import axios from 'axios';
 import * as Forms from './forms';
 import Create from './Create';
 
+const optionsConcepto=[
+		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
+		{id: 21, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},	//2		
+		{id: 62, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	//4
+		{id: 117, label: '207-010' , value: 'MATRICULA EPG'}	,//3
+	];
+
 
 class Header extends Component {
 	constructor(){
 		super();
 		this.state = {
-			programas : [],
-			programa_selected : -1,
+			programas : [],			
 			description: "gaa",
+			descripcionConcepto: "",
 			programaciones: [],
-			programacion_selected: -1,
 			tipo_grado: "-1",
-			tipo_p_selected: -1,
-			costo_name: "",
-			selectedOption: null,
 			cuotas: "",
+			importeCalculado: 0,
 			readOnly: true,
-			readOnlyCiclo: true,
+			readOnlyBtn: true,
 			esDiplomado: false,
+			readOnlyImporte: true,
 			form: {
-				id_programa: '',
-				id_programacion_pagos: '',
-				costo_credito: '',
+				id_programa: -1,
+				id_programacion_pagos: -1,
+				costo_credito: 0,
 				costo_total: '',
 				id_concepto: '',
 				id_programa_ciclo: '',
-				creditos: '',
+				creditos: 0,
 				importe: '',
 				cuotas: ''
 			}
@@ -38,35 +43,116 @@ class Header extends Component {
 	}
 
 
+
 	handleChange = e =>{
+		//<CREATE /> HANDLE CHANGE
+		//console.log('cambió algo del componente hijo')
+
 		this.setState({
 			form: {
 				...this.state.form,
 				[e.target.name]: e.target.value
 			}
-		});
-		
+		});	
+		//para cambios en creditos
+		if(  e.target.name === 'creditos' ){
+			//calcaular IMPORTE
+			let creditos = e.target.value;
+			let importeCalculado =0;
+			let costo_credito = this.state.form.costo_credito;
+			importeCalculado=costo_credito*Number(creditos);
+			importeCalculado = Number(importeCalculado);
+			this.setState({importeCalculado});
+			this.setState(prevState => ({
+			    form: {                   // object that we want to update
+			        ...prevState.form,    // keep all other key-value pairs
+			        importe: importeCalculado       // update the value of specific key
+			    }
+			}));
+			console.log(importeCalculado)
+
+		}
+		//para cambios en concepto
+		if( e.target.name === 'id_concepto' ){
+			if( Number(e.target.value) !== -1 ){
+			  if( Number(e.target.value) === 9 || Number(e.target.value) === 117){
+					this.setState({ readOnlyImporte: false });//MATRICULA					
+					}else{
+					this.setState({ readOnlyImporte: true });//ENSEÑANZA
+					}			
+					optionsConcepto.forEach( (programa) =>{				
+						if( programa.id === Number(e.target.value) ){
+							this.setState( {descripcionConcepto: programa.value } );				  	
+				  	}
+					});		
+			}else{		 	  	
+				 	this.setState( {descripcionConcepto: "" } ); 	 	
+				}
+		}
+
+		let importe = this.state.form.importe;
+		if(  importe !== ''){
+			this.setState({readOnlyBtn: false});				
+		}else{
+			this.setState({readOnlyBtn: true});	
+		}
+	//	this.state.readOnlyBtn
+	}
+
+	handleSubmit = e =>{
+		e.preventDefault()
+		console.log(this.state.form)
+
 	}
 
 	handleProgramacionChange(e) {
-	  this.setState( {programacion_selected: Number(e.target.value) } );
-	  if (Number(e.target.value) === -1) {
+	  this.setState( {
+			form: {
+				...this.state.form,
+				[e.target.name]: e.target.value
+			}
+		} );
+		let id_programa = this.state.form.id_programa;
+		//this.setState( {readOnlyBtn: readOnlyValue} ); 
+	  if (Number(e.target.value) === -1 || Number(id_programa) === -1) {
 			this.setState( {cuotas: ""})
-			this.setState( {readOnlyCiclo: true} )
+			this.setState( {readOnly: true} )
+			this.setState( {readOnlyBtn: true} );
+ 			
 	  }	else{
-			this.setState( {cuotas: Number(e.target.value)+3})
-			this.setState( {readOnlyCiclo: false} )
-
-	  }
-	  	  
+			this.setState( {cuotas: Number(e.target.value)+3})		 
+			this.setState( {readOnly: false} );	
+			this.setState( {readOnlyBtn: true} );	 
+	  }  	  
 
 	}
 
+	handleCostoCreditoChange = e =>{
+	  this.setState( {
+			form: {
+				...this.state.form,
+				[e.target.name]: e.target.value
+			}
+		} );
+		//VALIDACION solo cuando es ENSEÑANZA	
+		//...	
+	}
 
 	handleProgramaChange(e) {
-	  this.setState( {programa_selected: Number(e.target.value) } );	  
+	  this.setState( {
+			form: {
+				...this.state.form,
+				[e.target.name]: e.target.value
+			}
+		} );
+		let id_programacion_pagos = this.state.form.id_programacion_pagos;
+
 		if( Number(e.target.value) !== -1 ){
-			this.setState( {readOnly: false} ); 	  	
+
+			if ( Number(id_programacion_pagos) !== -1  ) {
+				console.log(id_programacion_pagos)
+				this.setState( {readOnly: false} ); 	  
+			}		
 			this.state.programas.forEach( (programa) =>{				
 				if( programa.id === Number(e.target.value) ){
 			  	this.setState( {description: programa.nombrePrograma } );
@@ -75,9 +161,22 @@ class Header extends Component {
 			  }
 			});		
  	  }else{
+ 	  	//Mejorar luego, clean inputs
+ 	  	this.setState( {form: {
+				id_programa: -1,
+				id_programacion_pagos: -1,
+				costo_credito: '',
+				costo_total: '',
+				id_concepto: '',
+				id_programa_ciclo: '',
+				creditos: '',
+				importe: '',
+				cuotas: ''
+				} } );
  	  	this.setState( {description: "" } );	
  	  	this.setState( {tipo_grado: -1 } );
- 	  	this.setState( {readOnly: true} ); 	  	
+ 	  	this.setState( {readOnly: true} ); 
+ 	  	this.setState( {readOnlyBtn: true} ); 	  	
  	  }
 	}
 
@@ -103,13 +202,13 @@ class Header extends Component {
 				<div className="container">			
 					<h1>&bull; RF21-Registrar Costos de Programas &bull; 						
 					</h1>
-					<form action="">
+					<form onSubmit={this.handleSubmit}>
 						<div className="row">
 							<div className="col-md-2">			 
 								<div className="subject form-group">
 								  <label ><b>Escoja un programa</b></label>
-								    <select className="form-control"  value={this.state.programa_selected} 
-								    	onChange={this.handleProgramaChange}>
+								    <select className="form-control"  value={this.state.form.id_programa} 
+								    	onChange={this.handleProgramaChange} name="id_programa">
 								    		<option value="-1" default>Choose</option>							    					      
 												{
 													this.state.programas.map( (programa) => 
@@ -131,8 +230,8 @@ class Header extends Component {
 
 							<div className="col-md-2">
 								<div className="form-group ">
-									<label htmlFor="costo_credito"><b>Costo Total</b> </label>
-									<input type="text" value="S/. 322.00" className="form-control bg-info text-white" readOnly/>					
+									<label htmlFor="costo_total"><b>Costo Total</b> </label>
+									<input type="text" value="S/ 0.00" className="form-control bg-info text-white" readOnly/>					
 								</div>							
 							</div>
 						</div>
@@ -140,7 +239,8 @@ class Header extends Component {
 							<div className="col-md-8">			 
 								<div className="subject form-group">
 								  <label ><b>Escoja la programación de pagos</b> </label>
-								    <select className="form-control"  value={this.state.programacion_selected} 
+								    <select className="form-control"  name="id_programacion_pagos"
+								    value={this.state.form.id_programacion_pagos} 
 								    	onChange={this.handleProgramacionChange}>
 								    		<option value="-1" default>Choose</option>							    					      
 												{
@@ -165,7 +265,8 @@ class Header extends Component {
 								<div className="form-group">
 									<label htmlFor="costo_credito"> <b> Costo Crédito</b> 									
 									</label>
-									<input type="text" className="form-control" placeholder={`Costo crédito`}/>	
+									<input type="text" className="form-control" placeholder={`Costo crédito`}
+										value={this.state.form.costo_credito} name="costo_credito" onChange={this.handleCostoCreditoChange}/>	
 								</div>											
 							</div>									
 						</div>	
@@ -173,7 +274,14 @@ class Header extends Component {
 							<div className="col-md-12">
 								<Create tipo_grado={this.state.tipo_grado}
 									readOnly={this.state.readOnly}
-									readOnlyCiclo={this.state.readOnlyCiclo}/>
+									readOnlyBtn={this.state.readOnlyBtn}
+									readOnlyImporte={this.state.readOnlyImporte}
+									onChange={this.handleChange}
+									onSubmit={this.handleSubmit}
+									form = {this.state.form}
+									concepto={this.state.descripcionConcepto}
+									importeCalculado={this.state.importeCalculado}
+									/>
 							</div>												
 						</div>
 					</form>	{/*end.form*/}
