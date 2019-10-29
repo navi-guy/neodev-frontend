@@ -30,7 +30,7 @@ class Create extends Component {
 	componentDidUpdate(prevProps){
 		// Uso tipico (no olvides de comparar los props):
 	  if (this.props.tipo_grado !== prevProps.tipo_grado) {
-	   axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programa_ciclos/'+this.props.tipo_grado)		
+	   axios.get('http://costoprogramas-back.herokuapp.com/programa_ciclos?tipoGrado='+this.props.tipo_grado)		
 			.then(response => {
 				this.setState({ programa_ciclos: response.data })			
 			})
