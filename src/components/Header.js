@@ -31,9 +31,9 @@ class Header extends Component {
 				id_programa: -1,
 				id_programacion_pagos: -1,
 				costo_credito: 0,
+				id_programa_ciclo: '',
 				costo_total: 0,
 				id_concepto: '',
-				id_programa_ciclo: '',
 				creditos: 0,
 				importe: '',
 				cuotas: ''
@@ -113,7 +113,7 @@ class Header extends Component {
 				body: JSON.stringify(this.state.form)
 			}
 			let response = await
-			fetch('http://costoprogramas-back.herokuapp.com/presupuesto_store',config)
+			fetch('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/presupuesto_store',config)
 			let json = await response.json()
 			console.log(json);
 			swal("Guardado exitoso!", "", "success");
@@ -201,14 +201,14 @@ class Header extends Component {
 	}
 
 	componentDidMount(){
-		axios.get('http://costoprogramas-back.herokuapp.com/programas')
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programas')
 		.then(response => {
 			this.setState({ programas: response.data })			
 		})
 		.catch( error =>{ console.log(error) 
 		});
 
-		axios.get('http://costoprogramas-back.herokuapp.com/programacion_pagos')
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programacion_pagos')
 		.then(response => {
 			this.setState({ programaciones: response.data })			
 		})
