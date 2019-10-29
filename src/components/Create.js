@@ -123,7 +123,7 @@ class Create extends Component {
 					  				<button className="btn btn-success " type="submit" disabled={this.props.readOnlyBtn}>
 										Guardar
 									</button> &nbsp;
-									<button className="btn btn-danger">
+									<button className="btn btn-danger" type="button">
 										Limpiar
 									</button>
 					  			</div>									

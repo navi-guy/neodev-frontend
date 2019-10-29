@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import axios from 'axios';
 import * as Forms from './forms';
 import Create from './Create';
+import swal from 'sweetalert';
 
 const optionsConcepto=[
 		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
@@ -115,8 +116,11 @@ class Header extends Component {
 			fetch('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/presupuesto_store',config)
 			let json = await response.json()
 			console.log(json);
+			swal("Guardado exitoso!", "", "success");
+			console.log('paso guardado')
 		}catch( error ){
-			console.log('ERROR..')
+			console.log('ERROR..');
+			swal("Oops, Algo salió mal!!", "", "error");
 		}
 
 	}
