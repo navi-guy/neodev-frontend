@@ -17,7 +17,7 @@ class Header extends Component {
 		super();
 		this.state = {
 			programas : [],			
-			description: "gaa",
+			description: "",
 			descripcionConcepto: "",
 			programaciones: [],
 			tipo_grado: "-1",
@@ -28,15 +28,16 @@ class Header extends Component {
 			esDiplomado: false,
 			readOnlyImporte: true,
 			form: {
+				id_programa_presupuesto_det: '',
 				id_programa: -1,
 				id_programacion_pagos: -1,
 				costo_credito: 0,
-				id_programa_ciclo: '',
+				id_programa_ciclo: -1,
 				costo_total: 0,
 				id_concepto: '',
 				creditos: 0,
 				importe: '',
-				cuotas: ''
+				cuotas: 4
 			}
 		}
 	this.handleProgramaChange = this.handleProgramaChange.bind(this);  
@@ -48,7 +49,6 @@ class Header extends Component {
 	handleChange = e =>{
 		//<CREATE /> HANDLE CHANGE
 		//console.log('cambió algo del componente hijo')
-
 		this.setState({
 			form: {
 				...this.state.form,
@@ -56,7 +56,7 @@ class Header extends Component {
 			}
 		});	
 		//para cambios en creditos
-		if(  e.target.name === 'creditos' ){
+		if(  e.target.name === 'creditos'){
 			//calcaular IMPORTE
 			let creditos = e.target.value;
 			let importeCalculado =0;
@@ -70,11 +70,11 @@ class Header extends Component {
 			        importe: importeCalculado       // update the value of specific key
 			    }
 			}));
-		//	console.log(importeCalculado)
-
+			//console.log(importeCalculado)
 		}
 		//para cambios en concepto
 		if( e.target.name === 'id_concepto' ){
+			//console.log(e.target.value);
 			if( Number(e.target.value) !== -1 ){
 			  if( Number(e.target.value) === 9 || Number(e.target.value) === 117){
 					this.setState({ readOnlyImporte: false });//MATRICULA					
@@ -101,8 +101,8 @@ class Header extends Component {
 	}
 
 	handleSubmit = async e =>{
-		e.preventDefault()
-		console.log(this.state.form)
+		e.preventDefault();
+		console.log( this.state.form);
 		try{
 			let config = {
 				method: 'POST',
@@ -113,10 +113,14 @@ class Header extends Component {
 				body: JSON.stringify(this.state.form)
 			}
 			let response = await
-			fetch('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/presupuesto_store',config)
+			fetch('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/presupuestos',config)
 			let json = await response.json()
 			console.log(json);
+			this.setState({form: {...this.state.form, importe: ''}	});
+			this.setState({form: {...this.state.form, creditos: 0}	});
+			
 			swal("Guardado exitoso!", "", "success");
+			//console.log('After: ',this.state.form);
 			//console.log('paso guardado')
 		}catch( error ){
 			console.log('ERROR..');
@@ -132,15 +136,31 @@ class Header extends Component {
 				[e.target.name]: e.target.value
 			}
 		} );
+
 		let id_programa = this.state.form.id_programa;
+		id_programa = id_programa.toString();
+		let id_programacion_pagos= e.target.value;
+		id_programacion_pagos =id_programa.toString();
+		let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
+		if( Number(id_programacion_pagos) !== -1 ){
+			if (Number(id_programa) !==-1) {				
+				this.setState(prevState => ({
+					    form: {                   // object that we want to update
+					        ...prevState.form,    // keep all other key-value pairs
+					        id_programa_presupuesto_det: id_programa_presupuesto_det  // update the value of specific key
+					    }
+				}));
+				//console.log( id_programa_presupuesto_det);
+			}
+		}
 		//this.setState( {readOnlyBtn: readOnlyValue} ); 
-	  if (Number(e.target.value) === -1 || Number(id_programa) === -1) {
+	  if (Number(id_programacion_pagos) === -1 || Number(id_programa) === -1) {
 			this.setState( {cuotas: ""})
 			this.setState( {readOnly: true} )
 			this.setState( {readOnlyBtn: true} );
  			
 	  }	else{
-			this.setState( {cuotas: Number(e.target.value)+3})		 
+			this.setState( {cuotas: Number(e.target.value)*0+4})		 
 			this.setState( {readOnly: false} );	
 			this.setState( {readOnlyBtn: true} );	 
 	  }  	  
@@ -154,9 +174,26 @@ class Header extends Component {
 				[e.target.name]: e.target.value
 			}
 		} );
+		let creditos = this.state.form.creditos;
+			if ( creditos  !== 0 ) {				
+				let importeCalculado =0;
+				let costo_credito = e.target.value;
+				importeCalculado=costo_credito*Number(creditos);
+				importeCalculado = Number(importeCalculado);
+				this.setState({importeCalculado});
+				this.setState(prevState => ({
+				    form: {                   // object that we want to update
+				        ...prevState.form,    // keep all other key-value pairs
+				        importe: importeCalculado       // update the value of specific key
+				    }
+				}));
+			//console.log(importeCalculado)
+			}
+
 		//VALIDACION solo cuando es ENSEÑANZA	
 		//...	
 	}
+
 
 	handleProgramaChange(e) {
 	  this.setState( {
@@ -164,15 +201,27 @@ class Header extends Component {
 				...this.state.form,
 				[e.target.name]: e.target.value
 			}
-		} );
-		let id_programacion_pagos = this.state.form.id_programacion_pagos;
+		});
+		//handle efectos
+		//let id_programacion_pagos = this.state.form.id_programacion_pagos;	
+		let id_programa = e.target.value;
+		id_programa = id_programa.toString();
+		let id_programacion_pagos= this.state.form.id_programacion_pagos;
+		id_programacion_pagos =id_programa.toString();
+		let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
+		if( Number(id_programa) !== -1 ){
+			if (Number(id_programacion_pagos !==-1)) {				
+				this.setState(prevState => ({
+					    form: {                   // object that we want to update
+					        ...prevState.form,    // keep all other key-value pairs
+					        id_programa_presupuesto_det: id_programa_presupuesto_det  // update the value of specific key
+					    }
+				}));
+	//	console.log( id_programa_presupuesto_det);
+			}
 
-		if( Number(e.target.value) !== -1 ){
-
-			if ( Number(id_programacion_pagos) !== -1  ) {
-				console.log(id_programacion_pagos)
-				this.setState( {readOnly: false} ); 	  
-			}		
+		//	console.log(id_programacion_pagos)
+			this.setState( {readOnly: false} );   	
 			this.state.programas.forEach( (programa) =>{				
 				if( programa.id === Number(e.target.value) ){
 			  	this.setState( {description: programa.nombrePrograma } );
@@ -183,6 +232,7 @@ class Header extends Component {
  	  }else{
  	  	//Mejorar luego, clean inputs
  	  	this.setState( {form: {
+ 	  		//id_programa_presupuesto_det: '',
 				id_programa: -1,
 				id_programacion_pagos: -1,
 				costo_credito: '',
@@ -208,7 +258,7 @@ class Header extends Component {
 		.catch( error =>{ console.log(error) 
 		});
 
-		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programacion_pagos')
+		axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programacion-pagos')
 		.then(response => {
 			this.setState({ programaciones: response.data })			
 		})
@@ -264,9 +314,9 @@ class Header extends Component {
 								    	onChange={this.handleProgramacionChange}>
 								    		<option value="-1" default>Choose</option>							    					      
 												{
-													this.state.programaciones.map( (programa) => 
-														<option key={programa.id} value={programa.id}> 
-															{programa.fechaVigenciaInicio.concat(" hasta "+programa.fechaVigenciaFin) }
+													this.state.programaciones.map( (programacion) => 
+														<option key={programacion.id} value={programacion.id}> 
+															{programacion.fechaVigenciaInicio.concat(" hasta "+programacion.fechaVigenciaFin) }
 														</option>)
 												}  
 								    </select>
@@ -286,7 +336,8 @@ class Header extends Component {
 									<label htmlFor="costo_credito"> <b> Costo Crédito</b> 									
 									</label>
 									<input type="text" className="form-control" placeholder={`Costo crédito`}
-										value={this.state.form.costo_credito} name="costo_credito" onChange={this.handleCostoCreditoChange}/>	
+										value={this.state.form.costo_credito} name="costo_credito" 
+										onChange={this.handleCostoCreditoChange}/>	
 								</div>											
 							</div>									
 						</div>	

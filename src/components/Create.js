@@ -30,15 +30,13 @@ class Create extends Component {
 	componentDidUpdate(prevProps){
 		// Uso tipico (no olvides de comparar los props):
 	  if (this.props.tipo_grado !== prevProps.tipo_grado) {
-	   axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programa_ciclos?tipoGrado='+this.props.tipo_grado)		
+	   axios.get('https://cors-anywhere.herokuapp.com/http://costoprogramas-back.herokuapp.com/programa-ciclos/'+this.props.tipo_grado)		
 			.then(response => {
 				this.setState({ programa_ciclos: response.data })			
 			})
 			.catch( error =>{ console.log(error) 
 			});
-
-	  }
-				
+	  }				
 	}
 
 	handleChangeImporte = e =>{
@@ -75,13 +73,13 @@ class Create extends Component {
 					  				<label><b> Concepto</b></label>
 					  				<select className="form-control" name="id_concepto"
 					  				disabled={this.props.readOnly}
-					  				 value={this.props.id_concepto} 
+					  				 value={this.props.form.id_concepto} 
 								    	onChange={this.props.onChange}>
 								    	<option value="-1" default>Choose</option>							    					      
 												{
-												 optionsConcepto.map( (ciclo) => 
-														<option key={ciclo.id} value={ciclo.id}> 
-															{ciclo.label}
+												 optionsConcepto.map( (concepto) => 
+														<option key={concepto.id} value={concepto.id}> 
+															{concepto.label}
 														</option>)
 												}
 					  				</select>
@@ -91,9 +89,11 @@ class Create extends Component {
 					  		<div className="col-md-2">
 					  			<div className="form-group"> 
 					  				<label><b> Ciclo</b></label>
-					  				<select className="form-control"  name="id_programa_ciclo"
-					  				value={this.props.form.id_programa_ciclo} 
-								    	onChange={this.props.onChange} required disabled={this.props.readOnly}>								    								    					      
+					  				<select className="form-control"  name="id_programa_ciclo"					  				
+					  					disabled={this.props.readOnly}
+					  					value={this.props.form.id_programa_ciclo} 
+								    	onChange={this.props.onChange}>	
+								    	<option value="-1" default>Choose</option>							    								    					      
 												{
 													this.state.programa_ciclos.map( (ciclo) => 
 														<option key={ciclo.id} value={ciclo.id}> 
@@ -105,8 +105,7 @@ class Create extends Component {
 					  		</div>					  		
 					  		<div className="col-md-2">
 						  		<div className="subject form-group">
-										<label><b> Importe</b></label>
-										
+										<label><b> Importe</b></label>										
 										<input type="text"  placeholder="" name="importe"
 										  className="form-control" value={this.props.form.importe} 
 										  onChange={this.props.onChange}
