@@ -272,21 +272,20 @@ class RegistroCostoPrograma extends Component {
 		});		
 	}
 	render(){
+		const mystyle = {
+			backgroundColor:'black',
+			color:  'lightblue',
+			padding: '20px',
+			textAlign: 'center',
+			fontSize: '28px',
+			margin: '0',
+			width:'100%',
+			fontWeight: 'bold',
+			fontFamily: 'Exo',
+		};
 		return (
 				<div className="app">
-					<h3 style={   {
-										backgroundColor:'black',
-									  color:  'lightblue',
-										padding: '20px',
-										textAlign: 'center',
-										fontWeight: '100',
-										fontSize: '28px',
-									  width : '50%',
-									  margin: '0',
-									  width:'100%',
-									  fontWeight: 'bold',
-									  fontFamily: 'Exo',
-							} }
+					<h3 style={mystyle}
 							> Registro Costo de Programas
 	            <ul id="nav-mobile" className="right  hide-on-med-and-down">
 	              <li >

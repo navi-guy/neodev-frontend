@@ -57,14 +57,14 @@ class Create extends Component {
 					<div className="card">
 					  <div className="card-body">
 					  	<div className="row">
-					  		<div className="col s4">
+					  		<div className="col-md-4">
 					  			<div className="subject form-group">
 									  <b> Trámite</b>
 									  <input type="text" value={this.props.concepto}
 									  className="form-control" readOnly/>									    
 									</div>								
 					  		</div>
-					  		<div className="col s2">
+					  		<div className="col-md-2">
 					  			<div className="form-group"> 
 					  				<b> Concepto</b>
 					  				<select className="form-control" name="id_concepto"
@@ -82,7 +82,7 @@ class Create extends Component {
 					  				
 					  			</div>					  			
 					  		</div>
-					  		<div className="col s2">
+					  		<div className="col-md-2">
 					  			<div className="form-group"> 
 					  				<b> Ciclo</b>
 					  				<select className="form-control"  name="id_programa_ciclo"					  				
@@ -99,7 +99,7 @@ class Create extends Component {
 								    </select>
 					  			</div>					  			
 					  		</div>					  		
-					  		<div className="col s2">
+					  		<div className="col-md-2">
 						  		<div className="subject form-group">
 										<b> Importe</b>										
 										<input type="text"  placeholder="Importe" name="importe"
@@ -108,7 +108,7 @@ class Create extends Component {
 										   readOnly={this.props.readOnlyImporte} required/>									    
 									</div>					  			
 					  		</div>
-					  		<div className="col s2">
+					  		<div className="col-md-2">
 					  		{this.renderSelectedForm(this.props.form.id_concepto)}						  							  			
 					  		</div>					  		
 					  	</div>{/* end.row*/}
