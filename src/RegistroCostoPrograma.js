@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as Detalles from './components/detalles';
 import Header from './components/Header';
 import swal from 'sweetalert';
-import './app.css';
+//import './app.css';
 
 const optionsConcepto=[
 		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
@@ -274,11 +274,24 @@ class RegistroCostoPrograma extends Component {
 	render(){
 		return (
 				<div className="app">
-					<h3> Registro Costo de Programas
+					<h3 style={   {
+										backgroundColor:'black',
+									  color:  'lightblue',
+										padding: '20px',
+										textAlign: 'center',
+										fontWeight: '100',
+										fontSize: '28px',
+									  width : '50%',
+									  margin: '0',
+									  width:'100%',
+									  fontWeight: 'bold',
+									  fontFamily: 'Exo',
+							} }
+							> Registro Costo de Programas
 	            <ul id="nav-mobile" className="right  hide-on-med-and-down">
 	              <li >
 	                  Regresar
-	                  <i className="material-icons right">reply</i>
+	                  <i className="material-icons right" style={{fontSize: '40px'}}>reply</i>
 	              </li>
 	            </ul>
 	        </h3>

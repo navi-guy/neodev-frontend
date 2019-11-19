@@ -12,26 +12,11 @@ h3{
   font-family: 'Exo', sans-serif;
 }
 
-.card{
-  margin-top: 0 auto;
-   margin-bottom: 0 auto;
-  padding-bottom: 1px;
-}
-.card-body{
-   margin-bottom: 0 auto;
-  padding-bottom: 1px;
-}
-
-.container-fluid{
-   margin-bottom: 0 auto;
-  padding-bottom: 1px;
-  margin-top: 0;
-}
-
 h4{
   font-size: 35px;
   color: #042431;
 }
+
 .material-icons{
   font-size: 40px;
 }
