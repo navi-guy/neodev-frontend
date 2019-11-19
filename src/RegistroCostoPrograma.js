@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as Detalles from './components/detalles';
 import Header from './components/Header';
 import swal from 'sweetalert';
-//import './app.css';
+import './app.css';
 
 const optionsConcepto=[
 		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
@@ -129,7 +129,7 @@ class RegistroCostoPrograma extends Component {
 				body: JSON.stringify(this.state.form)
 			}
 			let response = await
-			fetch('http://costoprogramas-back.herokuapp.com/presupuestos',config)
+			fetch('https://costoprogramas-back.herokuapp.com/presupuestos',config)
 			let json = await response.json()
 			console.log(json);
 			this.setState({form: {...this.state.form, importe: ''}	});
@@ -257,14 +257,14 @@ class RegistroCostoPrograma extends Component {
 	}
 
 	componentDidMount(){
-		axios.get('http://costoprogramas-back.herokuapp.com/programas',{ crossdomain: true })
+		axios.get('https://costoprogramas-back.herokuapp.com/programas',{ crossdomain: true })
 		.then(response => {
 			this.setState({ programas: response.data })			
 		})
 		.catch( error =>{ console.log(error) 
 		});
 
-		axios.get('http://costoprogramas-back.herokuapp.com/programacion-pagos',{ crossdomain: true })
+		axios.get('https://costoprogramas-back.herokuapp.com/programacion-pagos',{ crossdomain: true })
 		.then(response => {
 			this.setState({ programaciones: response.data })			
 		})
