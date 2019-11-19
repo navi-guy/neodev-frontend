@@ -98,27 +98,20 @@ class RegistroCostoPrograma extends Component {
 
 	clearForm = () =>{
 
-		// this.setState( {form: {
- 	//   		//id_programa_presupuesto_det: '',
- 	//   		...form
-		// 		id_programa_ciclo: -1,
-		// 		//creditos: '',
-		// 		importe: '',
-		// 		} } );
-
+	  this.setState( {
+			form: {
+				...this.state.form,
+				importe: ''
+			}
+		} );
 		this.setState(prevState => ({
 			    form: {                   
 			        ...prevState.form,    
 			        id_programa_ciclo: -1,
-			        creditos: 0,
-			        importe: ''
+		          creditos: 0, 
+			        id_concepto: -1,
 			    }
 			}));
-		//this.setState({form: {...this.state.form, id_programa_ciclo:-1}	});
-	//	let creditos =0;
-		//this.setState({form: {...this.state.form, importe: '' }	});	
-	//	this.setState({form: {...this.state.form, id_programa_ciclo: -1}	});		
-		console.log(this.state.form);
 	}
 
 	
