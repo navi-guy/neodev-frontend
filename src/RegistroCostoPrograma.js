@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as Detalles from './components/detalles';
 import Header from './components/Header';
 import swal from 'sweetalert';
-import './app.css';
+//import './app.css';
 
 const optionsConcepto=[
 		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
