@@ -220,13 +220,13 @@ class RegistroCostoPrograma extends Component {
 		//let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
 		if( Number(id_programa) !== -1 ){
 			// if (Number(id_programacion_pagos !==-1)) {				
-			// 	this.setState(prevState => ({
-			// 		    form: {                   // object that we want to update
-			// 		        ...prevState.form,    // keep all other key-value pairs
-			// 		        id_programa_presupuesto_det: id_programa_presupuesto_det  // update the value of specific key
-			// 		    }
-			// 	}));
-			// }
+				// this.setState(prevState => ({
+				// 	    form: {                   // object that we want to update
+				// 	        ...prevState.form,    // keep all other key-value pairs
+				// 	        id_programa_presupuesto_det:  9// update the value of specific key
+				// 	    }
+				// }));
+			//}
 			this.setState( {readOnly: false} );   	
 			this.state.programas.forEach( (programa) =>{				
 				if( programa.id === Number(e.target.value) ){
@@ -238,7 +238,7 @@ class RegistroCostoPrograma extends Component {
  	  }else{
  	  	//Mejorar luego, clean inputs
  	  	this.setState( {form: {
- 	  		//id_programa_presupuesto_det: '',
+ 	  		id_programa_presupuesto_det: '',
 				id_programa: -1,
 				id_programacion_pagos: -1,
 				costo_credito: '',
