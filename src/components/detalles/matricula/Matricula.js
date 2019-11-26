@@ -34,7 +34,10 @@ class TableMatricula extends Component {
                         <td>{detalle.concepto.concepto}</td>
                         <td>{detalle.importe}</td>
                         <td>
-                          <button className="btn btn-warning">
+                          <button className="btn btn-warning" onClick={this.props.btnEdit}
+                              importe={detalle.importe}
+                              concepto={detalle.concepto.id} 
+                              ciclo={detalle.programaCiclo.id}>
                             <i className="large material-icons">create</i>
                           </button>&nbsp;
                           <button className="btn btn-danger">
@@ -63,11 +66,14 @@ class TableMatricula extends Component {
                   return (<Fragment key={`fragment_${detalle.programaCiclo.id}_${detalle.concepto.id}`}>
                       <tr key={i}>
                         <td>{i+1}</td>
-                        <td>Ciclo{detalle.programaCiclo.ciclo}</td>
+                        <td>Ciclo&nbsp;{detalle.programaCiclo.ciclo}</td>
                         <td>{detalle.concepto.concepto}</td>
                         <td>{detalle.importe}</td>
                         <td>
-                          <button className="btn btn-warning">
+                          <button className="btn btn-warning" onClick={this.props.btnEdit}
+                              importe={detalle.importe}
+                              concepto={detalle.concepto.id} 
+                              ciclo={detalle.programaCiclo.id}>
                             <i className="large material-icons">create</i>
                           </button>&nbsp;
                           <button className="btn btn-danger">

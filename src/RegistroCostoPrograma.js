@@ -29,8 +29,10 @@ class RegistroCostoPrograma extends Component {
 			readOnlyBtn: true,
 			esDiplomado: false,
 			readOnlyImporte: true,
+			readOnlyHeader: false,
+			readOnlyCostoCredito: false,
 			form: {
-				id_programa_presupuesto_det: '',
+				id_programa_presupuesto: -1,
 				id_programa: -1,
 				id_programacion_pagos: -1,
 				costo_credito: 0,
@@ -95,8 +97,51 @@ class RegistroCostoPrograma extends Component {
 	//	this.state.readOnlyBtn
 	}
 
-	clearForm = () =>{
+	createEditableMatricula= (e) => {
+		let $select_concepto = document.getElementById("select_concepto");
+		$select_concepto.disabled = ($select_concepto.disabled === false)? true : false;
+		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
+		$select_programa_ciclo.disabled = ($select_programa_ciclo.disabled === false)? true : false;
+		let $importe = document.getElementById("importe");
+		let $btn_save_create =  document.getElementById("btnSaveCreate");
+		$btn_save_create.disabled = ($btn_save_create.disabled === false)? true : false;
+		$importe.disabled = ($importe.disabled === false)? true : false;
+		$importe.readOnly = ($importe.readOnly === false)? true : false;
+		window.scrollTo(0, 0);
+		$importe.focus();
+		//document.getElementById("select").selectedIndex = 0;
+		let importe_edit = e.currentTarget.getAttribute('importe');
+		$importe.value = importe_edit;
+		let ciclo_edit =  e.currentTarget.getAttribute('ciclo');
+		$select_programa_ciclo.selectedIndex = ciclo_edit; 
+		let concepto_edit =  Number(e.currentTarget.getAttribute('concepto'));
+		//console.log(  e.currentTarget  );
+		//console.log(concepto_edit);
+		switch(concepto_edit){
+			case 9:
+		    concepto_edit=1;//index 1
+		    break;
+		  case 21:
+		    concepto_edit=2;//index 2
+		    break;
+		  case 62:
+		    concepto_edit=3;//index 3
+		    break;
+		  case 117:
+		    concepto_edit=4;//index 4
+		    break;
 
+		  default:
+		 	  concepto_edit=-1;
+
+		}	
+		///set state
+		console.log(concepto_edit);
+		$select_concepto.selectedIndex = concepto_edit;
+
+	}
+
+	clearForm = () =>{
 	  this.setState( {
 			form: {
 				...this.state.form,
@@ -211,8 +256,6 @@ class RegistroCostoPrograma extends Component {
 		});
 		//handle efectos	
 		let id_programa = e.target.value;
-		id_programa = id_programa.toString();
-		let id_programacion_pagos= this.state.form.id_programacion_pagos;
 		//id_programacion_pagos =id_programa.toString();
 		//let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
 		if( Number(id_programa) !== -1 ){
@@ -263,7 +306,21 @@ class RegistroCostoPrograma extends Component {
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
 				this.setState({ programaPresupuesto: response.data })
-				console.log(response.data);			
+				let id_programa_presupuesto = (response.data)?response.data.id:-1;
+				this.setState({id_programa_presupuesto: id_programa_presupuesto})
+				let readOnlyHeader = (response.data)?true:false;	
+				this.setState({readOnlyHeader: readOnlyHeader});
+				this.setState({readOnlyCostoCredito: readOnlyHeader});
+			  if(id_programa_presupuesto!==-1){
+			  	this.setState( {
+						form: {
+							...this.state.form,
+							costo_credito: response.data.costoCredito,
+							id_programa_presupuesto: response.data.id 
+						}
+					})	
+			  }			  	  
+				console.log(response.data)
 			})
 			.catch( error =>{ console.log(error) 
 			});
@@ -328,6 +385,8 @@ class RegistroCostoPrograma extends Component {
 											handleCostoCreditoChange = {this.handleCostoCreditoChange}
 											clearForm = {this.clearForm}
 											programaPresupuesto={this.state.programaPresupuesto}
+											readOnlyHeader ={this.state.readOnlyHeader}
+											readOnlyCostoCredito = {this.state.readOnlyCostoCredito}
 											>						
 						</Header>
 						<div className="card">
@@ -352,7 +411,10 @@ renderSelectedForm( tipo_grado ){
 	 //console.log(tipo_grado);
 		if( tipo_grado !== "06" ){
 			const Detalle = Detalles["Matricula"];
-			return <Detalle programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}/>
+			return <Detalle 
+			programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}
+			btnEdit = {this.createEditableMatricula}
+			/>
 		}		
 	}
 renderSelectedForm2(){

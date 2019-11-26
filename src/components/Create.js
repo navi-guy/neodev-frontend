@@ -61,14 +61,16 @@ class Create extends Component {
 					  			<div className="subject form-group">
 									  <b> Trámite</b>
 									  <input type="text" value={this.props.concepto}
-									  className="form-control" readOnly/>									    
+									  className="form-control" readOnly// disabled={this.props.isDisabled}
+									  />									    
 									</div>								
 					  		</div>
 					  		<div className="col-md-2">
 					  			<div className="form-group"> 
 					  				<b> Concepto</b>
 					  				<select className="form-control" name="id_concepto"
-					  				disabled={this.props.readOnly}
+					  				//disabled={this.props.readOnly}
+					  				 disabled={this.props.isDisabled} id="select_concepto"
 					  				 value={this.props.form.id_concepto} 
 								    	onChange={this.props.onChange}>
 								    	<option value="-1" default>Choose</option>							    					      
@@ -86,7 +88,8 @@ class Create extends Component {
 					  			<div className="form-group"> 
 					  				<b> Ciclo</b>
 					  				<select className="form-control"  name="id_programa_ciclo"					  				
-					  					disabled={this.props.readOnly}
+					  					//disabled={this.props.readOnly} 
+					  					 disabled={this.props.isDisabled} id="select_programa_ciclo"
 					  					value={this.props.form.id_programa_ciclo} 
 								    	onChange={this.props.onChange}>	
 								    	<option value="-1" default>Choose</option>							    								    					      
@@ -104,8 +107,11 @@ class Create extends Component {
 										<b> Importe</b>										
 										<input type="text"  placeholder="Importe" name="importe"
 										  className="form-control" value={this.props.form.importe} 
-										  onChange={this.props.onChange}
-										   readOnly={this.props.readOnlyImporte} required/>									    
+										  onChange={this.props.onChange}  id="importe"
+										  // disabled={this.props.isDisabled} 
+										  disabled={this.props.isDisabled}
+										  readOnly={this.props.readOnlyImporte} 
+										  required/>									    
 									</div>					  			
 					  		</div>
 					  		<div className="col-md-2">
@@ -115,7 +121,8 @@ class Create extends Component {
 					  	<div className="row">
 					  		<div className="col s12">
 					  			<div className=" float-right">
-											<button className="btn waves-effect waves-light" type="submit" disabled={this.props.readOnlyBtn}>
+											<button className="btn waves-effect waves-light" id="btnSaveCreate"
+											 type="submit" disabled={this.props.readOnlyBtn}>
 									 		  <i className="material-icons left">save</i>		
 									 		  Guardar							 		 
 											</button>

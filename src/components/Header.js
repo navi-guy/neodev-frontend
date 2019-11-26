@@ -3,12 +3,16 @@ import Create from './Create';
 
 
 class Header extends Component {
-
 	focus = () => {
 		let $costo_credito = document.getElementById("costo_credito");
+		$costo_credito.disabled = ($costo_credito.disabled === false)? true : false;
 		$costo_credito.focus();
+	}	
+	componenDidUpdate(prevProps){
+		if (this.props.readOnlyHeader !== prevProps.readOnlyHeader) {
+	  	console.log(this.props.readOnlyHeader)
+	  }		
 	}
-
 	reload = () => ( window.location.reload(true) )	
 
 	render(){
@@ -24,9 +28,9 @@ class Header extends Component {
 											</span>
 										</div>
 										<div className="float-left">
-											{this.props.form.costo_credito===0?"":" - CostoCrédito"}
+											{(this.props.form.costo_credito===0||!this.props.form.costo_credito)?"":" - CostoCrédito"}
 											<span className="badge badge-info" style={{color: 'black'}}>
-											{this.props.form.costo_credito===0?'':'S/. '+this.props.form.costo_credito}
+											{(this.props.form.costo_credito===0||!this.props.form.costo_credito)?'':'S/. '+this.props.form.costo_credito}
 											</span>
 										</div>																  
 									</div>
@@ -48,7 +52,7 @@ class Header extends Component {
 											<div className="subject form-group">
 											  	<b>Escoja un programa</b>
 											    <select className="form-control" value={this.props.form.id_programa} 
-											    	onChange={this.props.handleProgramaChange} name="id_programa">
+											    	onChange={this.props.handleProgramaChange} name="id_programa" disabled={this.props.readOnlyHeader}>
 											    		<option value="-1" default>Choose</option>							    					      
 															{
 																this.props.programas.map( (programa) => 
@@ -81,7 +85,7 @@ class Header extends Component {
 											<div className="subject form-group">
 											  <b>Escoja la programación de pagos</b>
 											    <select className="form-control"  name="id_programacion_pagos"
-											    value={this.props.form.id_programacion_pagos} 
+											    value={this.props.form.id_programacion_pagos} disabled={this.props.readOnlyHeader}
 											    	onChange={this.props.handleProgramacionChange}>
 											    		<option value="-1" default>Choose</option>							    					      
 															{
@@ -90,6 +94,8 @@ class Header extends Component {
 																		{programacion.fechaVigenciaInicio.concat(" hasta "+programacion.fechaVigenciaFin) }
 																	</option>)
 															}  
+											    }
+											    }
 											    </select>
 											</div>			
 										</div>	
@@ -97,15 +103,16 @@ class Header extends Component {
 											<div className="form-group">
 												<b>Cuotas</b>
 												<input type="text" className="form-control"
-													value={this.props.cuotas} readOnly/>						    																																						    			
+													value={this.props.cuotas} disabled/>						    																																						    			
 											</div>							
 										</div>
 										<div className="col-md-3">
 											<div className="form-group">
 												 <b> Costo Crédito</b> 									
 												<input type="text" id="costo_credito" className="form-control" placeholder={`Costo crédito`}
-													value={this.props.programaPresupuesto.costoCredito||this.props.form.costo_credito} name="costo_credito" 
-													onChange={this.props.handleCostoCreditoChange}/>	
+													value={this.props.form.costo_credito} name="costo_credito" 
+													onChange={this.props.handleCostoCreditoChange} 
+													disabled={this.props.readOnlyCostoCredito}/>	
 											</div>											
 										</div>	
 										<div className="col-md-2" >
@@ -132,6 +139,7 @@ class Header extends Component {
 										concepto={this.props.descripcionConcepto}
 										importeCalculado={this.props.importeCalculado}
 										clearForm = {this.props.clearForm}
+										isDisabled={this.props.readOnlyHeader}
 										> 
 						</Create>
 					</form>	
