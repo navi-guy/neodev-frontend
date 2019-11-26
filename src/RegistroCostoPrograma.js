@@ -17,6 +17,8 @@ class RegistroCostoPrograma extends Component {
 		super();
 		this.state = {
 			programas : [],			
+			programaDetalle: [],
+			programaPresupuesto: "",
 			description: "",
 			descripcionConcepto: "",
 			programaciones: [],
@@ -43,8 +45,6 @@ class RegistroCostoPrograma extends Component {
 	}
 
 	handleChange = e =>{
-		//<CREATE /> HANDLE CHANGE
-		//console.log('cambió algo del componente hijo')
 		this.setState({
 			form: {
 				...this.state.form,
@@ -66,7 +66,6 @@ class RegistroCostoPrograma extends Component {
 			        importe: importeCalculado       // update the value of specific key
 			    }
 			}));
-			//console.log(importeCalculado)
 		}
 		//para cambios en concepto
 		if( e.target.name === 'id_concepto' ){
@@ -139,7 +138,6 @@ class RegistroCostoPrograma extends Component {
 			console.log('ERROR..');
 			swal("Oops, Algo salió mal!!", "", "error");
 		}
-
 	}
 
 	handleProgramacionChange = (e) =>{ 
@@ -152,7 +150,6 @@ class RegistroCostoPrograma extends Component {
 		let id_programa = this.state.form.id_programa;
 		id_programa = id_programa.toString();
 		let id_programacion_pagos= e.target.value;
-		id_programacion_pagos =id_programa.toString();
 		// let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
 		// if( Number(id_programacion_pagos) !== -1 ){
 		// 	if (Number(id_programa) !==-1) {				
@@ -215,7 +212,7 @@ class RegistroCostoPrograma extends Component {
 		//handle efectos	
 		let id_programa = e.target.value;
 		id_programa = id_programa.toString();
-		//let id_programacion_pagos= this.state.form.id_programacion_pagos;
+		let id_programacion_pagos= this.state.form.id_programacion_pagos;
 		//id_programacion_pagos =id_programa.toString();
 		//let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
 		if( Number(id_programa) !== -1 ){
@@ -227,6 +224,7 @@ class RegistroCostoPrograma extends Component {
 				// 	    }
 				// }));
 			//}
+
 			this.setState( {readOnly: false} );   	
 			this.state.programas.forEach( (programa) =>{				
 				if( programa.id === Number(e.target.value) ){
@@ -254,6 +252,22 @@ class RegistroCostoPrograma extends Component {
  	  	this.setState( {readOnly: true} ); 
  	  	this.setState( {readOnlyBtn: true} ); 	  	
  	  }
+	}
+
+	componentDidUpdate(prevProps, prevState){
+		// Uso tipico (no olvides de comparar los props):https://cors-anywhere.herokuapp.com/
+	  if (this.state.form.id_programa !== prevState.form.id_programa
+	   || this.state.form.id_programacion_pagos!== prevState.form.id_programacion_pagos ) {
+	  	console.log(this.state.form.id_programacion_pagos)
+	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
+	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
+			.then(response => {
+				this.setState({ programaPresupuesto: response.data })
+				console.log(response.data);			
+			})
+			.catch( error =>{ console.log(error) 
+			});
+	  }				
 	}
 
 	componentDidMount(){
@@ -313,6 +327,7 @@ class RegistroCostoPrograma extends Component {
 											handleProgramacionChange = {this.handleProgramacionChange}
 											handleCostoCreditoChange = {this.handleCostoCreditoChange}
 											clearForm = {this.clearForm}
+											programaPresupuesto={this.state.programaPresupuesto}
 											>						
 						</Header>
 						<div className="card">
@@ -337,13 +352,12 @@ renderSelectedForm( tipo_grado ){
 	 //console.log(tipo_grado);
 		if( tipo_grado !== "06" ){
 			const Detalle = Detalles["Matricula"];
-			return <Detalle />
-		}
-		
+			return <Detalle programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}/>
+		}		
 	}
 renderSelectedForm2(){
 		const Detalle = Detalles["Perfeccionamiento"];
-		return <Detalle />		
+		return <Detalle programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}/>		
 	}
 }
 

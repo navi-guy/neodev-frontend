@@ -9,9 +9,7 @@ class Header extends Component {
 		$costo_credito.focus();
 	}
 
-	reload = () => ( window.location.reload(true) )
-		
-	
+	reload = () => ( window.location.reload(true) )	
 
 	render(){
 
@@ -72,7 +70,9 @@ class Header extends Component {
 										<div className="col-md-2">
 											<div className="form-group ">
 												<b>Costo Total</b>
-												<input type="text" style={{textAlign: 'center', fontWeight: 'bold'}} value="S/ 0.00" className="form-control bg-info text-white" readOnly/>					
+												<input type="text" style={{textAlign: 'center', fontWeight: 'bold'}} 
+												value={`S/. ${this.props.programaPresupuesto.costoTotal||'0.00'}`}
+												className="form-control bg-info text-white" readOnly/>					
 											</div>							
 										</div>
 									{/*</div> 
@@ -104,7 +104,7 @@ class Header extends Component {
 											<div className="form-group">
 												 <b> Costo Crédito</b> 									
 												<input type="text" id="costo_credito" className="form-control" placeholder={`Costo crédito`}
-													value={this.props.form.costo_credito} name="costo_credito" 
+													value={this.props.programaPresupuesto.costoCredito||this.props.form.costo_credito} name="costo_credito" 
 													onChange={this.props.handleCostoCreditoChange}/>	
 											</div>											
 										</div>	
