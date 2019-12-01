@@ -18,7 +18,7 @@ class Header extends Component {
 	render(){
 
 		return (		
-						<form onSubmit={this.props.handleSubmit}>					
+						<form onSubmit={this.props.handleSubmit} tipo_save={this.props.tipo_save}>					
 							<div className="card">
 								<div className="card-header">
 									<div>	
@@ -140,6 +140,7 @@ class Header extends Component {
 										importeCalculado={this.props.importeCalculado}
 										clearForm = {this.props.clearForm}
 										isDisabled={this.props.readOnlyHeader}
+										addCreate={this.props.btnAddCreate}
 										> 
 						</Create>
 					</form>	

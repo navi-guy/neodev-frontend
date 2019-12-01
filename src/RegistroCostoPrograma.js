@@ -25,6 +25,7 @@ class RegistroCostoPrograma extends Component {
 			tipo_grado: "-1",
 			cuotas: "",
 			importeCalculado: 0,
+			tipo_save: 0,
 			readOnly: true,
 			readOnlyBtn: true,
 			esDiplomado: false,
@@ -96,8 +97,18 @@ class RegistroCostoPrograma extends Component {
 		}
 	//	this.state.readOnlyBtn
 	}
+	
+	addCreate = () =>{
+		let $select_concepto = document.getElementById("select_concepto");
+		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
+		$select_programa_ciclo.disabled =  false;
+		$select_concepto.disabled =  false;
+		this.setState({tipo_save: 1});//save añadirá detalle presupuesto
+
+	}
 
 	createEditableMatricula= (e) => {
+		this.setState({tipo_save: 2});
 		let $select_concepto = document.getElementById("select_concepto");
 		$select_concepto.disabled = ($select_concepto.disabled === false)? true : false;
 		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
@@ -161,28 +172,33 @@ class RegistroCostoPrograma extends Component {
 	
 	handleSubmit = async e =>{
 		e.preventDefault();
-		console.log( this.state.form);
-		try{
-			let config = {
-				method: 'POST',
-				headers:{
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				crossdomain: true ,
-				body: JSON.stringify(this.state.form)
-			}
-			let response = await
-			fetch('https://costoprogramas-back.herokuapp.com/presupuestos',config)
-			let json = await response.json()
-			console.log(json);
-			this.setState({form: {...this.state.form, importe: ''}	});
-			this.setState({form: {...this.state.form, creditos: 0}	});			
-			swal("Guardado exitoso!", "", "success");
-		}catch( error ){
-			console.log('ERROR..');
-			swal("Oops, Algo salió mal!!", "", "error");
-		}
+		//console.log( this.state.form);
+		//lógica 
+		console.log(e.currentTarget);
+		let tipo_save = e.currentTarget.getAttribute('tipo_save');
+
+		console.log(tipo_save);
+		// try{
+		// 	let config = {
+		// 		method: 'POST',
+		// 		headers:{
+		// 			'Accept': 'application/json',
+		// 			'Content-Type': 'application/json'
+		// 		},
+		// 		crossdomain: true ,
+		// 		body: JSON.stringify(this.state.form)
+		// 	}
+		// 	let response = await
+		// 	fetch('https://costoprogramas-back.herokuapp.com/presupuestos',config)
+		// 	let json = await response.json()
+		// 	console.log(json);
+		// 	this.setState({form: {...this.state.form, importe: ''}	});
+		// 	this.setState({form: {...this.state.form, creditos: 0}	});			
+		// 	swal("Guardado exitoso!", "", "success");
+		// }catch( error ){
+		// 	console.log('ERROR..');
+		// 	swal("Oops, Algo salió mal!!", "", "error");
+		// }
 	}
 
 	handleProgramacionChange = (e) =>{ 
@@ -311,6 +327,7 @@ class RegistroCostoPrograma extends Component {
 				let readOnlyHeader = (response.data)?true:false;	
 				this.setState({readOnlyHeader: readOnlyHeader});
 				this.setState({readOnlyCostoCredito: readOnlyHeader});
+				this.setState({tipo_save: 1});
 			  if(id_programa_presupuesto!==-1){
 			  	this.setState( {
 						form: {
@@ -387,6 +404,8 @@ class RegistroCostoPrograma extends Component {
 											programaPresupuesto={this.state.programaPresupuesto}
 											readOnlyHeader ={this.state.readOnlyHeader}
 											readOnlyCostoCredito = {this.state.readOnlyCostoCredito}
+											btnAddCreate = {this.addCreate}
+											tipo_save = {this.state.tipo_save}
 											>						
 						</Header>
 						<div className="card">
