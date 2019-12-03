@@ -40,7 +40,7 @@ class TableMatricula extends Component {
                               ciclo={detalle.programaCiclo.id}>
                             <i className="large material-icons">create</i>
                           </button>&nbsp;
-                          <button className="btn btn-danger">
+                          <button className="btn btn-danger" onClick={this.props.btnDeleteDetalle}>
                             <i className="large material-icons">delete</i>
                           </button>
                         </td>
@@ -76,7 +76,8 @@ class TableMatricula extends Component {
                               ciclo={detalle.programaCiclo.id}>
                             <i className="large material-icons">create</i>
                           </button>&nbsp;
-                          <button className="btn btn-danger">
+                          <button className="btn btn-danger" onClick={this.props.btnDeleteDetalle}                         
+                          >
                             <i className="large material-icons">delete</i>
                           </button>
                         </td>

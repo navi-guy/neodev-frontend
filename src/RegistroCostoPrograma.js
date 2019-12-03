@@ -97,59 +97,69 @@ class RegistroCostoPrograma extends Component {
 		}
 	//	this.state.readOnlyBtn
 	}
+
+	btnDeleteDetalle = () => {
+		swal({
+		  title: "Estás seguro?",
+		  text: "Una vez hayas eliminado, no podrás recuperar el registro!",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+		    swal("Poof! Tu registro detalle presupuesto ha sido eliminado!", {
+		      icon: "success",
+		    });
+		  } else {
+		    swal("Tu registro está seguro!");
+		  }
+		});
+	}
 	
 	addCreate = () =>{
 		let $select_concepto = document.getElementById("select_concepto");
 		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
+		let $importe = document.getElementById("importe");
 		$select_programa_ciclo.disabled =  false;
 		$select_concepto.disabled =  false;
-		this.setState({tipo_save: 1});//save añadirá detalle presupuesto
+		$importe.disabled = false;
+		$importe.readOnly = false;
+		this.setState({tipo_save: 2});//save añadirá detalle presupuesto
 
 	}
 
 	createEditableMatricula= (e) => {
-		this.setState({tipo_save: 2});
+		this.setState({tipo_save: 3});
 		let $select_concepto = document.getElementById("select_concepto");
-		$select_concepto.disabled = ($select_concepto.disabled === false)? true : false;
+		$select_concepto.disabled =  false;
+		//($select_concepto.disabled === false)? true : false;
 		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
-		$select_programa_ciclo.disabled = ($select_programa_ciclo.disabled === false)? true : false;
+		$select_programa_ciclo.disabled = false;
+		//($select_programa_ciclo.disabled === false)? true : false;
 		let $importe = document.getElementById("importe");
 		let $btn_save_create =  document.getElementById("btnSaveCreate");
-		$btn_save_create.disabled = ($btn_save_create.disabled === false)? true : false;
-		$importe.disabled = ($importe.disabled === false)? true : false;
-		$importe.readOnly = ($importe.readOnly === false)? true : false;
+		$btn_save_create.disabled =false;
+		// ($btn_save_create.disabled === false)? true : false;		
+		$importe.disabled = false;
+		//($importe.disabled === false)? true : false;
+		$importe.readOnly = false;
+		//($importe.readOnly === false)? true : false;
 		window.scrollTo(0, 0);
 		$importe.focus();
 		//document.getElementById("select").selectedIndex = 0;
-		let importe_edit = e.currentTarget.getAttribute('importe');
-		$importe.value = importe_edit;
+		let importe_edit = e.currentTarget.getAttribute('importe');		
 		let ciclo_edit =  e.currentTarget.getAttribute('ciclo');
-		$select_programa_ciclo.selectedIndex = ciclo_edit; 
 		let concepto_edit =  Number(e.currentTarget.getAttribute('concepto'));
-		//console.log(  e.currentTarget  );
-		//console.log(concepto_edit);
-		switch(concepto_edit){
-			case 9:
-		    concepto_edit=1;//index 1
-		    break;
-		  case 21:
-		    concepto_edit=2;//index 2
-		    break;
-		  case 62:
-		    concepto_edit=3;//index 3
-		    break;
-		  case 117:
-		    concepto_edit=4;//index 4
-		    break;
-
-		  default:
-		 	  concepto_edit=-1;
-
-		}	
-		///set state
-		console.log(concepto_edit);
-		$select_concepto.selectedIndex = concepto_edit;
-
+		this.setState( {
+			form: {
+				...this.state.form,
+				importe: importe_edit,
+				id_programa_ciclo: ciclo_edit,
+				id_concepto: concepto_edit
+			}
+		} );
+		console.log(ciclo_edit);
 	}
 
 	clearForm = () =>{
@@ -178,27 +188,64 @@ class RegistroCostoPrograma extends Component {
 		let tipo_save = e.currentTarget.getAttribute('tipo_save');
 
 		console.log(tipo_save);
-		// try{
-		// 	let config = {
-		// 		method: 'POST',
-		// 		headers:{
-		// 			'Accept': 'application/json',
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		crossdomain: true ,
-		// 		body: JSON.stringify(this.state.form)
-		// 	}
-		// 	let response = await
-		// 	fetch('https://costoprogramas-back.herokuapp.com/presupuestos',config)
-		// 	let json = await response.json()
-		// 	console.log(json);
-		// 	this.setState({form: {...this.state.form, importe: ''}	});
-		// 	this.setState({form: {...this.state.form, creditos: 0}	});			
-		// 	swal("Guardado exitoso!", "", "success");
-		// }catch( error ){
-		// 	console.log('ERROR..');
-		// 	swal("Oops, Algo salió mal!!", "", "error");
-		// }
+		if (Number(tipo_save)===1) {//save first time
+			console.log( 'Tipo Save 1:',this.state.form);
+			try{
+				let config = {
+					method: 'POST',
+					headers:{
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					crossdomain: true ,
+					body: JSON.stringify(this.state.form)
+				}
+				let response = await
+	fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos',config)
+				let json = await response.json()
+				console.log(json);
+				this.setState({form: {...this.state.form, importe: ''}	});
+				this.setState({form: {...this.state.form, creditos: 0}	});			
+				swal("Guardado exitoso!", "", "success");
+			}catch( error ){
+				console.log('ERROR..');
+				this.callProgramaPresupuestoDetalles();
+				swal("Oops, Algo salió mal!!", "", "error");
+			}
+
+		}
+		else if((Number(tipo_save)===2)){// second time widt id_progrma_presupeusto
+			console.log( 'Tipo Save 2:',this.state.form);
+			try{
+			let config = {
+				method: 'PUT',
+				headers:{
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				crossdomain: true ,
+				body: JSON.stringify(this.state.form)
+			}
+				let response = await
+fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos/'+
+	this.state.form.id_programa_presupuesto+'/detalle',config)
+				let json = await response.json()
+				console.log(json);
+				this.setState({form: {...this.state.form, importe: ''}	});
+				this.setState({form: {...this.state.form, creditos: 0}	});			
+				swal("Guardado exitoso,,,!", "", "success");
+
+
+
+			}catch( error ){
+				console.log('ERROR..');
+				swal("Oops, Algo salió mal!!", "", "error");
+			}
+		}
+		else{ // update detalle
+				swal("Actualizacion exitosa!", "", "success");
+		}
+	
 	}
 
 	handleProgramacionChange = (e) =>{ 
@@ -313,6 +360,18 @@ class RegistroCostoPrograma extends Component {
  	  }
 	}
 
+	callProgramaPresupuestoDetalles = () =>{
+		// Uso tipico (no olvides de comparar los props):https://cors-anywhere.herokuapp.com/
+	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
+	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
+			.then(response => {
+				this.setState({ programaPresupuesto: response.data })		  	  
+				console.log(response.data)
+			})
+			.catch( error =>{ console.log(error) 
+			});				
+	}
+
 	componentDidUpdate(prevProps, prevState){
 		// Uso tipico (no olvides de comparar los props):https://cors-anywhere.herokuapp.com/
 	  if (this.state.form.id_programa !== prevState.form.id_programa
@@ -321,7 +380,11 @@ class RegistroCostoPrograma extends Component {
 	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
-				this.setState({ programaPresupuesto: response.data })
+
+				this.setState({ programaPresupuesto: response.data })	
+				
+
+
 				let id_programa_presupuesto = (response.data)?response.data.id:-1;
 				this.setState({id_programa_presupuesto: id_programa_presupuesto})
 				let readOnlyHeader = (response.data)?true:false;	
@@ -433,12 +496,16 @@ renderSelectedForm( tipo_grado ){
 			return <Detalle 
 			programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}
 			btnEdit = {this.createEditableMatricula}
+			btnDeleteDetalle = {this.btnDeleteDetalle}
 			/>
 		}		
 	}
 renderSelectedForm2(){
 		const Detalle = Detalles["Perfeccionamiento"];
-		return <Detalle programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}/>		
+		return <Detalle 
+		programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}
+		btnDeleteDetalle = {this.btnDeleteDetalle}
+		/>		
 	}
 }
 
