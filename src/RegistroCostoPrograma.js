@@ -213,6 +213,8 @@ class RegistroCostoPrograma extends Component {
 				swal("Oops, Algo salió mal!!", "", "error");
 			}
 
+			//aquí haacer el post
+
 		}
 		else if((Number(tipo_save)===2)){// second time widt id_progrma_presupeusto
 			console.log( 'Tipo Save 2:',this.state.form);

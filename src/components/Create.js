@@ -125,7 +125,9 @@ class Create extends Component {
 					  					{this.renderBtn(this.props.isDisabled)}	
 					  					 &nbsp;
 											<button className="btn waves-effect waves-light" id="btnSaveCreate"
-											 type="submit" disabled={this.props.readOnlyBtn} >
+											 type="submit"
+											  //disabled={this.props.readOnlyBtn} 
+											  >
 									 		  <i className="material-icons left">save</i>		
 									 		  Guardar							 		 
 											</button>
