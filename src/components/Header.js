@@ -59,7 +59,7 @@ class Header extends Component {
 																	<option key={programa.id} value={programa.id}> 
 																		{programa.siglaPrograma}
 																	</option>)
-															}  
+															}															 
 											    </select>
 											</div>			
 										</div>
@@ -79,8 +79,8 @@ class Header extends Component {
 												className="form-control bg-info text-white" readOnly/>					
 											</div>							
 										</div>
-									{/*</div> 
-									<div className="row">*/}
+									</div>	{/*end.row*/}
+									<div className="row">
 										<div className="col-md-4">			 
 											<div className="subject form-group">
 											  <b>Escoja la programación de pagos</b>
@@ -93,9 +93,7 @@ class Header extends Component {
 																	<option key={programacion.id} value={programacion.id}> 
 																		{programacion.fechaVigenciaInicio.concat(" hasta "+programacion.fechaVigenciaFin) }
 																	</option>)
-															}  
-											    }
-											    }
+															}
 											    </select>
 											</div>			
 										</div>	
@@ -114,8 +112,29 @@ class Header extends Component {
 													onChange={this.props.handleCostoCreditoChange} 
 													disabled={this.props.readOnlyCostoCredito}/>	
 											</div>											
-										</div>	
-										<div className="col-md-2" >
+										</div>
+										<div className="col-md-2">
+											{this.renderBtnRPP(this.props.form.id_programa_presupuesto)}
+											{this.renderBtnEdit_Save(this.props.form.id_programa_presupuesto)}											
+										</div>									
+									</div>	{/*end.row*/}
+								</div>	{/*end.card.body	*/}					
+							</div> {/*end.card*/}
+							{this.renderCreate(this.props.form.id_programa_presupuesto)}
+
+					</form>	
+			) 
+		}
+	renderBtnRPP(id_programa_presupuesto){
+		if ( Number(id_programa_presupuesto) === -1) {
+			return 	<button className="btn waves-light waves-effect">
+								Registrar												
+							</button>
+		}
+	}
+	renderBtnEdit_Save(id_programa_presupuesto){
+		if ( Number(id_programa_presupuesto) !== -1) {
+			return 	<div>
 											<button className="btn waves-effect waves-light" onClick={this.focus}
 											 type="button">
 												<i className="material-icons">create</i> 
@@ -124,11 +143,12 @@ class Header extends Component {
 											<button className="btn waves-effect waves-light" id="save-header"  type="button">
 												<i className="material-icons">save</i> 
 											</button>
-										</div>								
-									</div>	{/*end.row*/}
-								</div>	{/*end.card.body	*/}					
-							</div> {/*end.card*/}
-						<Create 
+							</div>
+		}
+	}
+	renderCreate(id_programa_presupuesto){
+		if ( Number(id_programa_presupuesto) !== -1) {
+			return 		<Create 
 									  tipo_grado={this.props.tipo_grado}
 										readOnly={this.props.readOnly}
 										readOnlyBtn={this.props.readOnlyBtn}
@@ -143,9 +163,9 @@ class Header extends Component {
 										addCreate={this.props.btnAddCreate}
 										> 
 						</Create>
-					</form>	
-			) 
 		}
+	}
+
 }
 
 export default Header;

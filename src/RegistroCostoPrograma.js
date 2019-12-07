@@ -235,7 +235,8 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 				let json = await response.json()
 				console.log(json);
 				this.setState({form: {...this.state.form, importe: ''}	});
-				this.setState({form: {...this.state.form, creditos: 0}	});			
+				this.setState({form: {...this.state.form, creditos: 0}	});	
+				this.callProgramaPresupuestoDetalles();		
 				swal("Guardado exitoso,,,!", "", "success");
 
 
@@ -383,11 +384,8 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
-
-				this.setState({ programaPresupuesto: response.data })	
 				
-
-
+				this.setState({ programaPresupuesto: response.data })				
 				let id_programa_presupuesto = (response.data)?response.data.id:-1;
 				this.setState({id_programa_presupuesto: id_programa_presupuesto})
 				let readOnlyHeader = (response.data)?true:false;	
@@ -403,7 +401,7 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 						}
 					})	
 			  }			  	  
-				console.log(response.data)
+				console.log(response.data);
 			})
 			.catch( error =>{ console.log(error) 
 			});
