@@ -205,18 +205,19 @@ class RegistroCostoPrograma extends Component {
 				let json = await response.json()
 				console.log(json);
 				this.setState({form: {...this.state.form, importe: ''}	});
-				this.setState({form: {...this.state.form, creditos: 0}	});			
+				this.setState({form: {...this.state.form, creditos: 0}	});	
+				this.callProgramaPresupuestoDetalles();		
 				swal("Guardado exitoso!", "", "success");
 			}catch( error ){
 				console.log('ERROR..');
-				this.callProgramaPresupuestoDetalles();
 				swal("Oops, Algo salió mal!!", "", "error");
 			}
 
 			//aquí haacer el post
 
 		}
-		else if((Number(tipo_save)===2)){// second time widt id_progrma_presupeusto
+		else if((Number(tipo_save)===2)){
+		// second time widt id_progrma_presupeusto
 			console.log( 'Tipo Save 2:',this.state.form);
 			try{
 			let config = {
