@@ -13,7 +13,7 @@ class Header extends Component {
 	}	
 	componenDidUpdate(prevProps){
 		if (this.props.readOnlyHeader !== prevProps.readOnlyHeader) {
-	  	console.log(this.props.readOnlyHeader)
+	  	//console.log(this.props.readOnlyHeader)
 	  }		
 	}
 	reload = () => ( window.location.reload(true) )	

@@ -14,12 +14,11 @@ class TablePerfeccionamiento extends Component {
   getTotal(detalle){
     return detalle.map(({ importe }) => importe).reduce((sum, i) => Number(sum) + Number(i),Number(0));
   }
-  sortByProperty = (property) => {
-    return function (x, y) {
-        return ((x[property] === y[property]) ? 0 : ((x[property] > y[property]) ? 1 : -1));
-    };
-};
- 
+
+  ordenarAsc = (p_array_json) =>{
+   p_array_json.sort( (a, b) => 
+    parseFloat(a.programaCiclo.id) - parseFloat(b.programaCiclo.id) );
+  }
   render(){
     const mystyle ={ padding:'3px' };
     const detalles = this.props.programaDetalle || [] ;
@@ -27,8 +26,8 @@ class TablePerfeccionamiento extends Component {
     const detalles_enseñanza = 
     detalles!==[]?detalles.filter(detalle => 
     	(detalle.concepto.concepto === "210024  " || detalle.concepto.concepto === "210011  ")):[];
-  //  detalles_enseñanza.sort(this.sortByProperty('id'));
-  
+    this.ordenarAsc(detalles_enseñanza);
+
        return (
             <table className="table table-bordered" width="50%">
               <thead className="thead-light">

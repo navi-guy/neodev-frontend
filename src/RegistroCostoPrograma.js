@@ -3,14 +3,7 @@ import axios from 'axios';
 import * as Detalles from './components/detalles';
 import Header from './components/Header';
 import swal from 'sweetalert';
-//import './app.css';
 
-const optionsConcepto=[
-		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},
-		{id: 21, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},		
-		{id: 62, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	
-		{id: 117, label: '207-010' , value: 'MATRICULA EPG'}	
-	];
 
 class RegistroCostoPrograma extends Component {
 	constructor(){
@@ -18,6 +11,7 @@ class RegistroCostoPrograma extends Component {
 		this.state = {
 			programas : [],			
 			programaDetalle: [],
+			conceptos: [],
 			programaPresupuesto: "",
 			description: "",
 			descripcionConcepto: "",
@@ -76,14 +70,14 @@ class RegistroCostoPrograma extends Component {
 			if( Number(e.target.value) !== -1 ){
 			  if( Number(e.target.value) === 9 || Number(e.target.value) === 117){
 					this.setState({ readOnlyImporte: false });//MATRICULA					
-					}else{
+				}else{
 					this.setState({ readOnlyImporte: true });//ENSEÑANZA
-					}			
-					optionsConcepto.forEach( (programa) =>{				
-						if( programa.id === Number(e.target.value) ){
-							this.setState( {descripcionConcepto: programa.value } );				  	
+				}
+				this.state.conceptos.forEach( (programa) =>{									
+					if( programa.id === Number(e.target.value) ){
+							this.setState( {descripcionConcepto: programa.descripcion } );				  	
 				  	}
-					});		
+				});		
 			}else{		 	  	
 				 	this.setState( {descripcionConcepto: "" } ); 	 	
 				}
@@ -107,12 +101,12 @@ class RegistroCostoPrograma extends Component {
 		let concepto_edit =  Number(e.currentTarget.getAttribute('concepto'));
 		let creditos_edit = Number(e.currentTarget.getAttribute('creditos'));
 		$importe.readOnly = true;
-		console.log(creditos_edit);
+		//console.log(creditos_edit);
 		this.setState({tipo_save: 2});
 		//change Description CIclo					
-		optionsConcepto.forEach( (programa) =>{				
+		this.state.conceptos.forEach( (programa) =>{				
 			if( programa.id === concepto_edit ){
-				this.setState( {descripcionConcepto: programa.value } );				  	
+				this.setState( {descripcionConcepto: programa.descripcion } );				  	
 			}
 		});
 		this.setState(prevState =>  ({
@@ -138,9 +132,9 @@ class RegistroCostoPrograma extends Component {
 		$importe.readOnly = false;	
 		this.changeTipoSave(stateUpdateDetalle);
 		//change Description CIclo					
-		optionsConcepto.forEach( (programa) =>{				
+		this.state.conceptos.forEach( (programa) =>{				
 			if( programa.id === concepto_edit ){
-				this.setState( {descripcionConcepto: programa.value } );				  	
+				this.setState( {descripcionConcepto: programa.descripcion } );				  	
 			}
 		});
 		this.setState( {
@@ -370,7 +364,7 @@ class RegistroCostoPrograma extends Component {
 	  if (Number(id_programacion_pagos) === -1 || Number(id_programa) === -1) {
 			this.setState( {readOnly: true} )
 			this.setState( {readOnlyBtn: true} );
- 			console.log(id_programacion_pagos);
+ 			//console.log(id_programacion_pagos);
 	  }	else{					 
 			this.setState( {readOnly: false} );	
 			this.setState( {readOnlyBtn: true} );	 
@@ -449,7 +443,13 @@ class RegistroCostoPrograma extends Component {
 				this.setState({readOnlyHeader: readOnlyHeader});
 				this.setState({readOnlyCostoCredito: readOnlyHeader});				
 				this.setState({ programaPresupuesto: response.data })		  	  
-				//console.log('call again programaPresupuesto',response.data)
+				console.log('call again programaPresupuesto',response.data)
+				this.setState( {
+					form: {
+						...this.state.form,
+						costo_total: response.data.costoTotal
+					}
+				});
 			})
 			.catch( error =>{ console.log(error) 
 			});				
@@ -459,7 +459,7 @@ class RegistroCostoPrograma extends Component {
 		// Uso tipico (no olvides de comparar los props):https://cors-anywhere.herokuapp.com/
 	  if (this.state.form.id_programa !== prevState.form.id_programa
 	   || this.state.form.id_programacion_pagos!== prevState.form.id_programacion_pagos ) {
-	  	console.log(this.state.form.id_programacion_pagos)
+	  //	console.log(this.state.form.id_programacion_pagos)
 	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
@@ -503,6 +503,20 @@ class RegistroCostoPrograma extends Component {
 		})
 		.catch( error =>{ console.log(error) 
 		});		
+
+		axios.get('https://costoprogramas-back.herokuapp.com/conceptos',{ crossdomain: true })
+		.then(response => {
+
+		    let concepto_all = response.data|| [] ;
+		    concepto_all = Array.from(concepto_all);
+		    let conceptos_filtrados = 
+		    concepto_all!==[]?concepto_all.filter(concepto => 
+		    	(concepto.concepto === "210024  " || concepto.concepto === "210011  "
+		    			|| concepto.concepto === "210010  " || concepto.concepto === "207010  ")):[];
+					this.setState({ conceptos: conceptos_filtrados })			
+				})
+				.catch( error =>{ console.log(error) 
+				});
 	}
 	render(){
 	//console.log('tipo save',this.state.tipo_save);

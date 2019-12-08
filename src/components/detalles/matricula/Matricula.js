@@ -21,10 +21,9 @@ class TableMatricula extends Component {
     let total = Number(subtotalUPG) + Number(subtotalEPG);
     return total; 
   }
-  sortByProperty = (property) => {
-    return function (x, y) {
-        return ((x[property.id] === y[property.id]) ? 0 : ((x[property.id] > y[property.id]) ? 1 : -1));
-    };
+  ordenarAsc = (p_array_json) =>{
+   p_array_json.sort( (a, b) => 
+    parseFloat(a.programaCiclo.id) - parseFloat(b.programaCiclo.id) );
   }
 
   render(){
@@ -32,10 +31,8 @@ class TableMatricula extends Component {
     const detalles = this.props.programaDetalle || [] ;
     const detalles_matricula = detalles!==[]?detalles.filter(detalle =>detalle.concepto.concepto === "210010  "):[];//9 es conceptode enseñanza
     const detalles_matricula_epg = detalles!==[]?detalles.filter(detalle =>detalle.concepto.concepto === "207010  "):[];//9 es conceptode enseñanza
-    detalles_matricula.sort(this.sortByProperty('programaCiclo'));
-   //  detalles_matricula_epg.sort(this.sortByProperty('programaCiclo.id'));//asd 
-   // console.log(detalles_matricula);
-   // console.log(detalles_matricula_epg);
+    this.ordenarAsc(detalles_matricula);
+    this.ordenarAsc(detalles_matricula_epg);
        return (
         <div className="row">
           <div className="col-md-6">
@@ -54,7 +51,7 @@ class TableMatricula extends Component {
                   return (<Fragment key={`fragment_${detalle.programaCiclo.id}_${detalle.concepto.id}`}>
                       <tr key={i}>
                         <td style={mystyle}>{i+1}</td>
-                        <td style={mystyle}><center>Ciclo{detalle.programaCiclo.ciclo}</center></td>
+                        <td style={mystyle}><center>Ciclo&nbsp;{detalle.programaCiclo.ciclo}</center></td>
                         <td style={mystyle}><center>{detalle.concepto.concepto}</center></td>
                         <td style={mystyle}><center>{detalle.importe}</center></td>
                         <td style={mystyle}>

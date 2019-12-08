@@ -2,12 +2,6 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import * as Detalles from './detalles';
 
-const optionsConcepto=[
-		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
-		{id: 21, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},	//2		
-		{id: 62, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	//4
-		{id: 117, label: '207-010' , value: 'MATRICULA EPG'}	,//3
-	];
 
 class Create extends Component {
 	constructor(props){
@@ -15,6 +9,7 @@ class Create extends Component {
 		this.state = {		
 			selectedOptionConcepto: -1,
 			programa_ciclos: [],
+			conceptos: [],
 			selectedOptionCiclo: null,
 			descripcion: "",		
 			ciclo_selected: -1,
@@ -35,7 +30,20 @@ class Create extends Component {
 			})
 			.catch( error =>{ console.log(error) 
 			});
-	  		
+
+	  	axios.get('https://costoprogramas-back.herokuapp.com/conceptos',{ crossdomain: true })
+				.then(response => {
+				//	console.log(response);
+		    let concepto_all = response.data|| [] ;
+		    let conceptos_filtrados = 
+		    concepto_all!==[]?concepto_all.filter(concepto => 
+		    	(concepto.concepto === "210024  " || concepto.concepto === "210011  "
+		    			|| concepto.concepto === "210010  " || concepto.concepto === "207010  ")):[];
+					this.setState({ conceptos: conceptos_filtrados })		
+				//	console.log(conceptos_filtrados);	
+				})
+				.catch( error =>{ console.log(error) 
+				});	
 	}
 
 	handleChangeImporte = e =>{
@@ -77,9 +85,9 @@ class Create extends Component {
 								    	onChange={this.props.onChange}>
 								    	<option value="-1" default>Choose</option>							    					      
 												{
-												 optionsConcepto.map( (concepto) => 
+												 this.state.conceptos.map( (concepto) => 
 														<option key={concepto.id} value={concepto.id}> 
-															{concepto.label}
+															{concepto.concepto}
 														</option>)
 												}
 					  				</select>
