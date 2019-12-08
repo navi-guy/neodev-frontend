@@ -5,7 +5,10 @@ import Create from './Create';
 class Header extends Component {
 	focus = () => {
 		let $costo_credito = document.getElementById("costo_credito");
+		let $btn_save_header = document.getElementById("save-header");
+		$btn_save_header.disabled = ($btn_save_header.disabled === false)? true : false;
 		$costo_credito.disabled = ($costo_credito.disabled === false)? true : false;
+		this.props.changeTipoSave(3);
 		$costo_credito.focus();
 	}	
 	componenDidUpdate(prevProps){
@@ -107,10 +110,10 @@ class Header extends Component {
 										<div className="col-md-3">
 											<div className="form-group">
 												 <b> Costo Crédito</b> 									
-												<input type="text" id="costo_credito" className="form-control" placeholder={`Costo crédito`}
+												<input type="number" id="costo_credito" className="form-control" placeholder={`Costo crédito`}
 													value={this.props.form.costo_credito} name="costo_credito" 
-													onChange={this.props.handleCostoCreditoChange} 
-													disabled={this.props.readOnlyCostoCredito}/>	
+													onChange={this.props.handleCostoCreditoChange} step="any" min="1"
+													disabled={this.props.readOnlyCostoCredito} />	
 											</div>											
 										</div>
 										<div className="col-md-2">
@@ -127,7 +130,9 @@ class Header extends Component {
 		}
 	renderBtnRPP(id_programa_presupuesto){
 		if ( Number(id_programa_presupuesto) === -1) {
-			return 	<button className="btn waves-light waves-effect">
+			return 	<button className="btn waves-light waves-effect" 
+								//disabled={this.props.readOnly} 
+								>
 								Registrar												
 							</button>
 		}
@@ -140,7 +145,10 @@ class Header extends Component {
 												<i className="material-icons">create</i> 
 											</button>
 											&nbsp;
-											<button className="btn waves-effect waves-light" id="save-header"  type="button">
+											<button className="btn waves-effect waves-light" id="save-header"  
+												disabled={this.props.readOnlyCostoCredito}
+
+												>
 												<i className="material-icons">save</i> 
 											</button>
 							</div>
@@ -161,6 +169,7 @@ class Header extends Component {
 										clearForm = {this.props.clearForm}
 										isDisabled={this.props.readOnlyHeader}
 										addCreate={this.props.btnAddCreate}
+										tipo_save={this.props.tipo_save}
 										> 
 						</Create>
 		}

@@ -12,30 +12,30 @@ const optionsConcepto=[
 class Create extends Component {
 	constructor(props){
 		super(props);
-		this.state = {
+		this.state = {		
 			selectedOptionConcepto: -1,
 			programa_ciclos: [],
 			selectedOptionCiclo: null,
 			descripcion: "",		
-			ciclo_selected: -1
+			ciclo_selected: -1,
+			refs: [],
 		}
-		this.handleProgramaCicloChange = this.handleProgramaCicloChange.bind(this);  
+		this.handleProgramaCicloChange = this.handleProgramaCicloChange.bind(this);
 	}
 
 	handleProgramaCicloChange(e) {
 	  this.setState( {ciclo_selected: Number(e.target.value) } );	  
 	}	
 
-	componentDidUpdate(prevProps){
+	componentDidMount(){
 		// Uso tipico (no olvides de comparar los props):https://cors-anywhere.herokuapp.com/
-	  if (this.props.tipo_grado !== prevProps.tipo_grado) {
 	   axios.get('https://costoprogramas-back.herokuapp.com/programa-ciclos/'+this.props.tipo_grado)		
 			.then(response => {
 				this.setState({ programa_ciclos: response.data })			
 			})
 			.catch( error =>{ console.log(error) 
 			});
-	  }				
+	  		
 	}
 
 	handleChangeImporte = e =>{
@@ -52,11 +52,12 @@ class Create extends Component {
   	};
 
 
-	render(){	
+	render(){
+		const mystyle = { marginBottom: '0' , paddingBottom: '2px'} 	
 		return (					
-					<div className="card">
-					  <div className="card-body">
-					  	<div className="row">
+					<div className="card" style={mystyle}>
+					  <div className="card-body" style={mystyle}>
+					  	<div className="row" style={mystyle}>
 					  		<div className="col-md-4">
 					  			<div className="subject form-group">
 									  <b> Trámite</b>
@@ -70,7 +71,8 @@ class Create extends Component {
 					  				<b> Concepto</b>
 					  				<select className="form-control" name="id_concepto"
 					  				//disabled={this.props.readOnly}
-					  				 disabled={this.props.isDisabled} id="select_concepto"
+					  				// disabled={this.props.isDisabled} 
+					  				 id="select_concepto"
 					  				 value={this.props.form.id_concepto} 
 								    	onChange={this.props.onChange}>
 								    	<option value="-1" default>Choose</option>							    					      
@@ -88,8 +90,8 @@ class Create extends Component {
 					  			<div className="form-group"> 
 					  				<b> Ciclo</b>
 					  				<select className="form-control"  name="id_programa_ciclo"					  				
-					  					//disabled={this.props.readOnly} 
-					  					 disabled={this.props.isDisabled} id="select_programa_ciclo"
+					  					//disabled={this.props.isDisabled} 
+					  					id="select_programa_ciclo"
 					  					value={this.props.form.id_programa_ciclo} 
 								    	onChange={this.props.onChange}>	
 								    	<option value="-1" default>Choose</option>							    								    					      
@@ -109,7 +111,7 @@ class Create extends Component {
 										  className="form-control" value={this.props.form.importe} 
 										  onChange={this.props.onChange}  id="importe"
 										  // disabled={this.props.isDisabled} 
-										  disabled={this.props.isDisabled}
+										  //disabled={this.props.isDisabled}
 										  readOnly={this.props.readOnlyImporte} 
 										  required/>									    
 									</div>					  			
@@ -118,13 +120,12 @@ class Create extends Component {
 					  		{this.renderSelectedForm(this.props.form.id_concepto)}						  							  			
 					  		</div>					  		
 					  	</div>{/* end.row*/}
-					  	<div className="row">
+					  	<div className="row" style={mystyle}>
 					  		<div className="col s12">
 					  			<div className=" float-right">
 
-					  					{this.renderBtn(this.props.isDisabled)}	
-					  					 &nbsp;
-											<button className="btn waves-effect waves-light" id="btnSaveCreate"
+											<button className="btn  waves-effect waves-light" 
+												id="btnSaveCreate"
 											 type="submit"
 											  //disabled={this.props.readOnlyBtn} 
 											  >
@@ -132,9 +133,12 @@ class Create extends Component {
 									 		  Guardar							 		 
 											</button>
 					  				 &nbsp;
-									  	<button className="btn red" type="button" onClick={this.props.clearForm}>
+									  	<button className="btn  red" type="button" onClick={this.props.clearForm}>
 									  		 <i className="large material-icons left">cancel</i>	Limpiar
-									  	</button>								 		 								 		 
+									  	</button>&nbsp;	
+									  	{ this.renderModo(this.props.tipo_save) }
+									  				
+									  						  									 		 								 		 
 				
 					  			</div>									
 								</div>
@@ -148,15 +152,21 @@ class Create extends Component {
 		if(Number(concepto) === 21 || Number(concepto) === 62 ){
 				//console.log('ingreso!');
 					const Creditos = Detalles["Creditos"];
-					return <Creditos form={this.props.form.creditos} onChange={this.props.onChange}/>
+					return <Creditos form={this.props.form} onChange={this.props.onChange}/>
 				}
 	 }
-	renderBtn(stateBtnSave){
-		if (stateBtnSave) {
-			return <button className="btn waves-effect waves-effect"
-					  		onClick={this.props.addCreate} type="button">
-					  		<i className="material-icons left">border_color</i>Desbloquear
-					  	</button>
+	renderModo(tipo){
+		switch(Number(tipo)){
+			// case 0:
+			// 	break;
+			case 1:
+				return <span className="badge badge-light"> Modo Crear</span>
+			case 2:
+				return <span className="badge badge-light"> Modo Actualizar</span>
+			case 3:
+				return <span className="badge badge-light"> Modo Actualizar Header</span>
+			default:
+				return <span className="badge badge-light">-</span>
 		}
 	}
 }

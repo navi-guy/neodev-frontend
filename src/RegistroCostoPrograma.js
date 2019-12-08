@@ -6,10 +6,10 @@ import swal from 'sweetalert';
 //import './app.css';
 
 const optionsConcepto=[
-		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},//1
-		{id: 21, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},	//2		
-		{id: 62, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	//4
-		{id: 117, label: '207-010' , value: 'MATRICULA EPG'}	,//3
+		{id: 9, label: '210-010' , value: 'MATRICULA DOCTORADO/MAESTRÍA'},
+		{id: 21, label: '210-011' , value: 'ENSEÑANZA DOCTORADO/MAESTRÍA'},		
+		{id: 62, label: '210-024' , value: 'ENSEÑANZA DIPLOMATURA'},	
+		{id: 117, label: '207-010' , value: 'MATRICULA EPG'}	
 	];
 
 class RegistroCostoPrograma extends Component {
@@ -98,59 +98,51 @@ class RegistroCostoPrograma extends Component {
 	//	this.state.readOnlyBtn
 	}
 
-	btnDeleteDetalle = () => {
-		swal({
-		  title: "Estás seguro?",
-		  text: "Una vez hayas eliminado, no podrás recuperar el registro!",
-		  icon: "warning",
-		  buttons: true,
-		  dangerMode: true,
-		})
-		.then((willDelete) => {
-		  if (willDelete) {
-		    swal("Poof! Tu registro detalle presupuesto ha sido eliminado!", {
-		      icon: "success",
-		    });
-		  } else {
-		    swal("Tu registro está seguro!");
-		  }
-		});
-	}
-	
-	addCreate = () =>{
-		let $select_concepto = document.getElementById("select_concepto");
-		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
-		let $importe = document.getElementById("importe");
-		$select_programa_ciclo.disabled =  false;
-		$select_concepto.disabled =  false;
-		$importe.disabled = false;
-		$importe.readOnly = false;
-		this.setState({tipo_save: 2});//save añadirá detalle presupuesto
 
-	}
 
-	createEditableMatricula= (e) => {
-		this.setState({tipo_save: 3});
-		let $select_concepto = document.getElementById("select_concepto");
-		$select_concepto.disabled =  false;
-		//($select_concepto.disabled === false)? true : false;
-		let $select_programa_ciclo = document.getElementById("select_programa_ciclo");
-		$select_programa_ciclo.disabled = false;
-		//($select_programa_ciclo.disabled === false)? true : false;
+	createEditableEnseñanza= (e) => {	
 		let $importe = document.getElementById("importe");
-		let $btn_save_create =  document.getElementById("btnSaveCreate");
-		$btn_save_create.disabled =false;
-		// ($btn_save_create.disabled === false)? true : false;		
-		$importe.disabled = false;
-		//($importe.disabled === false)? true : false;
-		$importe.readOnly = false;
-		//($importe.readOnly === false)? true : false;
-		window.scrollTo(0, 0);
-		$importe.focus();
-		//document.getElementById("select").selectedIndex = 0;
 		let importe_edit = e.currentTarget.getAttribute('importe');		
 		let ciclo_edit =  e.currentTarget.getAttribute('ciclo');
 		let concepto_edit =  Number(e.currentTarget.getAttribute('concepto'));
+		let creditos_edit = Number(e.currentTarget.getAttribute('creditos'));
+		$importe.readOnly = true;
+		console.log(creditos_edit);
+		this.setState({tipo_save: 2});
+		//change Description CIclo					
+		optionsConcepto.forEach( (programa) =>{				
+			if( programa.id === concepto_edit ){
+				this.setState( {descripcionConcepto: programa.value } );				  	
+			}
+		});
+		this.setState(prevState =>  ({
+			form: {
+				...prevState.form,
+				id_concepto: concepto_edit,	
+				importe: importe_edit,
+				id_programa_ciclo: ciclo_edit,
+				creditos: creditos_edit
+			}
+		}) );					
+		window.scrollTo(0, 0);
+		$importe.focus();
+	}
+
+	createEditableMatricula= (e) => {	
+		let $importe = document.getElementById("importe");
+		let importe_edit = e.currentTarget.getAttribute('importe');		
+		let ciclo_edit =  e.currentTarget.getAttribute('ciclo');
+		let concepto_edit =  Number(e.currentTarget.getAttribute('concepto'));
+		let stateUpdateDetalle = 2;
+		$importe.disabled = false;
+		$importe.readOnly = false;	
+		this.changeTipoSave(stateUpdateDetalle);
+		//change Description CIclo					
+		optionsConcepto.forEach( (programa) =>{				
+			if( programa.id === concepto_edit ){
+				this.setState( {descripcionConcepto: programa.value } );				  	
+			}
+		});
 		this.setState( {
 			form: {
 				...this.state.form,
@@ -159,7 +151,12 @@ class RegistroCostoPrograma extends Component {
 				id_concepto: concepto_edit
 			}
 		} );
-		console.log(ciclo_edit);
+		window.scrollTo(0, 0);
+		$importe.focus();
+	}
+
+	changeTipoSave = (tipo) =>{
+		this.setState({tipo_save: tipo});
 	}
 
 	clearForm = () =>{
@@ -169,6 +166,9 @@ class RegistroCostoPrograma extends Component {
 				importe: ''
 			}
 		} );
+		this.setState({descripcionConcepto: ""});
+		let stateCreateDetalle = 1;
+		this.changeTipoSave(stateCreateDetalle);
 		this.setState(prevState => ({
 			    form: {                   
 			        ...prevState.form,    
@@ -178,77 +178,179 @@ class RegistroCostoPrograma extends Component {
 			    }
 			}));
 	}
+/*---------------------------------DELETE DETALLE PROGRAMA PRESUPUESTO------------------------------------*/
+	btnDeleteDetalle = (e) => {
 
-	
+		let ciclo_delete =  e.currentTarget.getAttribute('ciclo');
+		let concepto_delete =  Number(e.currentTarget.getAttribute('concepto'));
+		let url ='https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuesto-detalles?'
+								+'id-ciclo='+ciclo_delete
+								+'&id-concepto='+concepto_delete
+								+'&id-presupuesto='+this.state.form.id_programa_presupuesto;
+			swal({
+			  title: "Estás seguro?",
+			  text: "Una vez hayas eliminado, no podrás recuperar el registro!",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			})
+			.then((willDelete) => {
+			  if (willDelete) {
+			    axios.delete(url).then(res => {
+			      	console.log(res);
+			      	this.callProgramaPresupuestoDetalles();					
+								swal("Poof! Tu registro detalle presupuesto ha sido eliminado!", {
+								   icon: "success",
+								 });       
+			      }).catch(err => {
+			        console.log(err);
+			      });
+  				} else {
+			    swal("Tu registro está seguro!");
+			  }
+			});
+		}
+
 	handleSubmit = async e =>{
 		e.preventDefault();
-		//console.log( this.state.form);
-		//lógica 
-		console.log(e.currentTarget);
 		let tipo_save = e.currentTarget.getAttribute('tipo_save');
+	
+			switch (Number(tipo_save) ) {
+			  case 0:
+			/*----------------------- CREAR HEADER PROGRAMA PRESUPUESTO------------------------------- */
+				console.log( 'create Header Programa presupuesto:',this.state.form);
+					try{
+						let config = {
+							method: 'POST',
+							headers:{
+								'Accept': 'application/json',
+								'Content-Type': 'application/json'
+							},
+							crossdomain: true ,
+							body: JSON.stringify(this.state.form)
+						}
+						let response = await
+			fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos',config)
+						let json = await response.json()
+						console.log(json);
+					this.setState(prevState => ({
+					    form: {                   
+					        ...prevState.form,    
+					        id_programa_presupuesto: json.id,
+					        costo_credito: json.costoCredito   
+					    }
+					}));
+					this.setState(prevState => ({			                      
+					        ...prevState,    
+					        readOnlyHeader: true,
+					        readOnlyCostoCredito: true      
+					}));
+					swal("Guardado exitoso!", "", "success");
+					}catch( error ){
+						console.log('ERROR..');
+						swal("Oops, Algo salió mal!!", "", "error");
+					}
+			    break;
 
-		console.log(tipo_save);
-		if (Number(tipo_save)===1) {//save first time
-			console.log( 'Tipo Save 1:',this.state.form);
-			try{
-				let config = {
-					method: 'POST',
-					headers:{
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					},
-					crossdomain: true ,
-					body: JSON.stringify(this.state.form)
-				}
-				let response = await
-	fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos',config)
-				let json = await response.json()
-				console.log(json);
-				this.setState({form: {...this.state.form, importe: ''}	});
-				this.setState({form: {...this.state.form, creditos: 0}	});	
-				this.callProgramaPresupuestoDetalles();		
-				swal("Guardado exitoso!", "", "success");
-			}catch( error ){
-				console.log('ERROR..');
-				swal("Oops, Algo salió mal!!", "", "error");
+			  case 1: 
+			 /*-----------------------   CREAR DETALLE PROGRAMA PRESUPUESTO ----------------------*/
+					console.log( 'create Detalle Programa presupuesto:',this.state.form);
+
+					try{
+					let config = {
+						method: 'POST',
+						headers:{
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+						crossdomain: true ,
+						body: JSON.stringify(this.state.form)
+					}
+						let response = await
+		fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos/'+
+			this.state.form.id_programa_presupuesto+'/detalle',config)
+						let json = await response.json()
+						console.log(json);
+						if (json.error) {
+							console.log('ERROR..',json.error);
+							swal("Oops, Algo salió mal!!", "", "error");
+						}else{
+							this.setState({form: {...this.state.form, importe: ''}	});
+							this.setState({form: {...this.state.form, creditos: 0}	});
+							this.callProgramaPresupuestoDetalles();		
+							swal("Guardado exitoso,!", "", "success");								
+						}
+					}catch( error ){
+						console.log('ERROR..',error);
+						swal("Oops, Algo salió mal!!", "", "error");
+					}
+			    break;
+			  case 2:			   
+		 /*-----------------------   UPDATE DETALLE PROGRAMA PRESUPUESTO  ----------------------*/
+					console.log( 'UPDATE Detalle Programa presupuesto:',this.state.form);
+					try{
+					let config = {
+						method: 'POST',
+						headers:{
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+						crossdomain: true ,
+						body: JSON.stringify(this.state.form)
+					}
+						let response = await
+		fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuesto-detalles?id-ciclo='+
+						this.state.form.id_programa_ciclo+'&id-concepto='+
+						this.state.form.id_concepto+'&id-presupuesto='+this.state.form.id_programa_presupuesto,config)
+						let json = await response.json()
+						console.log(json);
+						if (json.error) {
+							console.log('ERROR..',json.error);
+							swal("Oops, Algo salió mal!!", "", "error");
+						}else{
+							this.clearForm();			
+							this.callProgramaPresupuestoDetalles();		
+							swal("Actualización exitosa!", "", "success");
+						}					
+					}catch( error ){
+						console.log('ERROR..',error);
+						swal("Oops, Algo salió mal!!", "", "error");
+					}
+			    break; 
+			  case 3:
+		 /*-----------------------   UPDATE HEADER PROGRAMA PRESUPUESTO  ----------------------*/
+			  console.log( 'UPDATE HEADER Programa presupuesto:',this.state.form);
+					try{
+					let config = {
+						method: 'PATCH',
+						headers:{
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+						crossdomain: true ,
+						body: JSON.stringify(this.state.form)
+					}
+						let response = await
+		fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos/'+
+			this.state.form.id_programa_presupuesto,config)
+						let json = await response.json()
+						console.log(json);	
+					let $costo_credito = document.getElementById("costo_credito");
+					let $btn_save_header = document.getElementById("save-header");
+					$btn_save_header.disabled = true;
+					$costo_credito.disabled = true ;
+					this.changeTipoSave(1);
+					this.callProgramaPresupuestoDetalles();	
+					swal("Actualización exitosa!", "", "success");
+
+					}catch( error ){
+						console.log('ERROR..',error);
+						swal("Oops, Algo salió mal!!", "", "error");
+					}  
+			    break;
+			  default:
+			    swal("Oops, Algo salió mal!!", "", "error");
 			}
-
-			//aquí haacer el post
-
-		}
-		else if((Number(tipo_save)===2)){
-		// second time widt id_progrma_presupeusto
-			console.log( 'Tipo Save 2:',this.state.form);
-			try{
-			let config = {
-				method: 'PUT',
-				headers:{
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				crossdomain: true ,
-				body: JSON.stringify(this.state.form)
-			}
-				let response = await
-fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos/'+
-	this.state.form.id_programa_presupuesto+'/detalle',config)
-				let json = await response.json()
-				console.log(json);
-				this.setState({form: {...this.state.form, importe: ''}	});
-				this.setState({form: {...this.state.form, creditos: 0}	});	
-				this.callProgramaPresupuestoDetalles();		
-				swal("Guardado exitoso,,,!", "", "success");
-
-
-
-			}catch( error ){
-				console.log('ERROR..');
-				swal("Oops, Algo salió mal!!", "", "error");
-			}
-		}
-		else{ // update detalle
-				swal("Actualizacion exitosa!", "", "success");
-		}
 	
 	}
 
@@ -262,18 +364,6 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 		let id_programa = this.state.form.id_programa;
 		id_programa = id_programa.toString();
 		let id_programacion_pagos= e.target.value;
-		// let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
-		// if( Number(id_programacion_pagos) !== -1 ){
-		// 	if (Number(id_programa) !==-1) {				
-		// 		this.setState(prevState => ({
-		// 			    form: {                   // object that we want to update
-		// 			        ...prevState.form,    // keep all other key-value pairs
-		// 			        id_programa_presupuesto_det: id_programa_presupuesto_det  // update the value of specific key
-		// 			    }
-		// 		}));
-		// 	}
-		// }
-		//this.setState( {readOnlyBtn: readOnlyValue} ); 
 	  Number(id_programacion_pagos) === -1?this.setState( {cuotas: ""}):
 	  	this.setState( {cuotas: Number(e.target.value)*0+4});
 
@@ -303,15 +393,12 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 				importeCalculado = Number(importeCalculado);
 				this.setState({importeCalculado});
 				this.setState(prevState => ({
-				    form: {                   // object that we want to update
-				        ...prevState.form,    // keep all other key-value pairs
-				        importe: importeCalculado       // update the value of specific key
+				    form: {              
+				        ...prevState.form,   
+				        importe: importeCalculado      
 				    }
 				}));
-			//console.log(importeCalculado)
 			}
-		//VALIDACION solo cuando es ENSEÑANZA	
-		//...	
 	}
 
 	handleProgramaChange = e =>{
@@ -323,24 +410,13 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 		});
 		//handle efectos	
 		let id_programa = e.target.value;
-		//id_programacion_pagos =id_programa.toString();
-		//let  id_programa_presupuesto_det =id_programa.concat(id_programacion_pagos) ;
 		if( Number(id_programa) !== -1 ){
-			// if (Number(id_programacion_pagos !==-1)) {				
-				// this.setState(prevState => ({
-				// 	    form: {                   // object that we want to update
-				// 	        ...prevState.form,    // keep all other key-value pairs
-				// 	        id_programa_presupuesto_det:  9// update the value of specific key
-				// 	    }
-				// }));
-			//}
-
 			this.setState( {readOnly: false} );   	
 			this.state.programas.forEach( (programa) =>{				
 				if( programa.id === Number(e.target.value) ){
 			  	this.setState( {description: programa.nombrePrograma } );
 			  	this.setState( {tipo_grado: programa.tipoGrado.id } );
-			  	//console.log(programa.tipoGrado.id); 
+			  	//console.log(programa); 
 			  }
 			});		
  	  }else{
@@ -369,8 +445,11 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
+				let readOnlyHeader = false;
+				this.setState({readOnlyHeader: readOnlyHeader});
+				this.setState({readOnlyCostoCredito: readOnlyHeader});				
 				this.setState({ programaPresupuesto: response.data })		  	  
-				console.log(response.data)
+				//console.log('call again programaPresupuesto',response.data)
 			})
 			.catch( error =>{ console.log(error) 
 			});				
@@ -391,8 +470,8 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 				let readOnlyHeader = (response.data)?true:false;	
 				this.setState({readOnlyHeader: readOnlyHeader});
 				this.setState({readOnlyCostoCredito: readOnlyHeader});
-				this.setState({tipo_save: 1});
 			  if(id_programa_presupuesto!==-1){
+					this.setState({tipo_save: 1});
 			  	this.setState( {
 						form: {
 							...this.state.form,
@@ -400,7 +479,9 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 							id_programa_presupuesto: response.data.id 
 						}
 					})	
-			  }			  	  
+ 					let $bodyHeader = document.getElementById("collapseExample");
+					$bodyHeader.classList.toggle('show');
+			  }	
 				console.log(response.data);
 			})
 			.catch( error =>{ console.log(error) 
@@ -424,6 +505,7 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 		});		
 	}
 	render(){
+	//console.log('tipo save',this.state.tipo_save);
 		const mystyle = {
 			backgroundColor:'black',
 			color:  'lightblue',
@@ -435,6 +517,7 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 			fontWeight: 'bold',
 			fontFamily: 'Exo',
 		};
+		//console.log('Tipo grado  ', this.state.form.creditos );
 		return (
 				<div className="app">
 					<h3 style={mystyle}
@@ -470,6 +553,7 @@ fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp
 											readOnlyCostoCredito = {this.state.readOnlyCostoCredito}
 											btnAddCreate = {this.addCreate}
 											tipo_save = {this.state.tipo_save}
+											changeTipoSave = {this.changeTipoSave}											
 											>						
 						</Header>
 						<div className="card">
@@ -506,6 +590,7 @@ renderSelectedForm2(){
 		return <Detalle 
 		programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}
 		btnDeleteDetalle = {this.btnDeleteDetalle}
+		btnEdit = {this.createEditableEnseñanza}
 		/>		
 	}
 }

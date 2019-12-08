@@ -1,83 +1,121 @@
 import React, {Component,Fragment } from 'react';
 
 class TableMatricula extends Component {  
-  // const blankRow = { concepto: "", monto: ""}
-  // const [ rowState, setRowState ] = useState([ {...blankRow} ]);
-  
-  // const subtotal = (rowState) => {
-  //   return rowState.map(({ monto }) => monto).reduce((sum, i) => Number(sum) + Number(i),Number(0));
-  // };
-  
+
+  constructor(props){
+    super(props);
+    this.getSubtotalUPG = this.getSubtotalUPG.bind(this);
+    this.getSubtotalEPG = this.getSubtotalEPG.bind(this);
+    this.getTotalMatricula = this.getTotalMatricula.bind(this);
+  }
+
+  getSubtotalUPG(detalle){
+    return detalle.map(({ importe }) => importe).reduce((sum, i) => Number(sum) + Number(i),Number(0));
+  }
+  getSubtotalEPG(detalle){
+    return detalle.map(({ importe }) => importe).reduce((sum, i) => Number(sum) + Number(i),Number(0));
+  }
+  getTotalMatricula(detalle,detalle_epg){
+    let subtotalUPG =this.getSubtotalUPG(detalle);
+    let subtotalEPG =this.getSubtotalEPG(detalle_epg);
+    let total = Number(subtotalUPG) + Number(subtotalEPG);
+    return total; 
+  }
+  sortByProperty = (property) => {
+    return function (x, y) {
+        return ((x[property.id] === y[property.id]) ? 0 : ((x[property.id] > y[property.id]) ? 1 : -1));
+    };
+  }
+
   render(){
+    const mystyle ={ padding:'3px' };
     const detalles = this.props.programaDetalle || [] ;
     const detalles_matricula = detalles!==[]?detalles.filter(detalle =>detalle.concepto.concepto === "210010  "):[];//9 es conceptode enseñanza
     const detalles_matricula_epg = detalles!==[]?detalles.filter(detalle =>detalle.concepto.concepto === "207010  "):[];//9 es conceptode enseñanza
+    detalles_matricula.sort(this.sortByProperty('programaCiclo'));
+   //  detalles_matricula_epg.sort(this.sortByProperty('programaCiclo.id'));//asd 
+   // console.log(detalles_matricula);
+   // console.log(detalles_matricula_epg);
        return (
         <div className="row">
           <div className="col-md-6">
-            <table className="table">
+            <table className="table table-bordered">
               <thead className="thead-dark">
-                <tr>
-                  <th scope="col">#</th> 
-                  <th scope="col">Matrícula </th>
-                  <th scope="col">Concepto de Pago</th>
-                  <th scope="col">Monto</th>
-                  <th scope="col">Acción</th>                
+                <tr >
+                  <th scope="col" style={mystyle}><center>#</center></th> 
+                  <th scope="col" style={mystyle}><center>Matrícula</center> </th>
+                  <th scope="col"style={mystyle}><center>Concepto de Pago</center></th>
+                  <th scope="col"style={mystyle}><center>Monto</center></th>
+                  <th scope="col" width="20%"style={mystyle}><center>Acción</center></th>                
                 </tr>
               </thead>
               <tbody>
                     {detalles_matricula.map((detalle, i) => {
                   return (<Fragment key={`fragment_${detalle.programaCiclo.id}_${detalle.concepto.id}`}>
                       <tr key={i}>
-                        <td>{i+1}</td>
-                        <td>Ciclo{detalle.programaCiclo.ciclo}</td>
-                        <td>{detalle.concepto.concepto}</td>
-                        <td>{detalle.importe}</td>
-                        <td>
-                          <button className="btn btn-warning" onClick={this.props.btnEdit}
+                        <td style={mystyle}>{i+1}</td>
+                        <td style={mystyle}><center>Ciclo{detalle.programaCiclo.ciclo}</center></td>
+                        <td style={mystyle}><center>{detalle.concepto.concepto}</center></td>
+                        <td style={mystyle}><center>{detalle.importe}</center></td>
+                        <td style={mystyle}>
+                          <button className="btn btn-sm  btn-warning" onClick={this.props.btnEdit}
                               importe={detalle.importe}
                               concepto={detalle.concepto.id} 
                               ciclo={detalle.programaCiclo.id}>
                             <i className="large material-icons">create</i>
                           </button>&nbsp;
-                          <button className="btn btn-danger" onClick={this.props.btnDeleteDetalle}>
+                          <button className="btn btn-sm btn-danger" onClick={this.props.btnDeleteDetalle}
+                            concepto={detalle.concepto.id} 
+                            ciclo={detalle.programaCiclo.id}
+                            >
                             <i className="large material-icons">delete</i>
                           </button>
                         </td>
                       </tr>
                   </Fragment>)
                   })}
-              </tbody>            
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colSpan="3" style={mystyle}>
+                    <div className="float-right">Subtotal Matrícula UPG</div>
+                  </th>
+                  <th style={mystyle}><center>S/. &nbsp;{this.getSubtotalUPG(detalles_matricula)}</center></th>
+                  <th style={mystyle}></th>                  
+                </tr> 
+              </tfoot>           
             </table>
           </div>
           <div className="col-md-6">
-            <table className="table">
-              <thead className="thead-dark">
+            <table className="table table-bordered">
+              <thead className="thead-dark ">
                 <tr>
-                  <th scope="col">#</th> 
-                  <th scope="col">Matrícula EPG</th>
-                  <th scope="col">Concepto de Pago</th>
-                  <th scope="col">Monto</th>
-                  <th scope="col">Acción</th>               
+                  <th scope="col" style={mystyle}><center>#</center></th> 
+                  <th scope="col" style={mystyle}><center>Matrícula</center> </th>
+                  <th scope="col"style={mystyle}><center>Concepto de Pago</center></th>
+                  <th scope="col"style={mystyle}><center>Monto</center></th>
+                  <th scope="col" width="20%"style={mystyle}><center>Acción</center></th>                
                 </tr>
               </thead>
               <tbody>
                     {detalles_matricula_epg.map((detalle, i) => {
                   return (<Fragment key={`fragment_${detalle.programaCiclo.id}_${detalle.concepto.id}`}>
                       <tr key={i}>
-                        <td>{i+1}</td>
-                        <td>Ciclo&nbsp;{detalle.programaCiclo.ciclo}</td>
-                        <td>{detalle.concepto.concepto}</td>
-                        <td>{detalle.importe}</td>
-                        <td>
-                          <button className="btn btn-warning" onClick={this.props.btnEdit}
+                        <td style={mystyle}>{i+1}</td>
+                        <td style={mystyle}><center>Ciclo{detalle.programaCiclo.ciclo}</center></td>
+                        <td style={mystyle}><center>{detalle.concepto.concepto}</center></td>
+                        <td style={mystyle}><center>{detalle.importe}</center></td>
+                        <td style={mystyle}>
+                          <button className="btn btn-sm  btn-warning" onClick={this.props.btnEdit}
                               importe={detalle.importe}
                               concepto={detalle.concepto.id} 
                               ciclo={detalle.programaCiclo.id}>
                             <i className="large material-icons">create</i>
                           </button>&nbsp;
-                          <button className="btn btn-danger" onClick={this.props.btnDeleteDetalle}                         
-                          >
+                          <button className="btn btn-sm btn-danger" onClick={this.props.btnDeleteDetalle}
+                            concepto={detalle.concepto.id} 
+                            ciclo={detalle.programaCiclo.id}
+                            >
                             <i className="large material-icons">delete</i>
                           </button>
                         </td>
@@ -85,6 +123,22 @@ class TableMatricula extends Component {
                   </Fragment>)
                   })}
               </tbody>            
+              <tfoot>
+                <tr>
+                  <th colSpan="3" style={mystyle}>
+                    <div className="float-right">Subtotal Matrícula EPG</div>
+                  </th>
+                  <th style={mystyle}><center>S/. &nbsp;{this.getSubtotalEPG(detalles_matricula_epg)}</center></th>
+                  <th style={mystyle}></th>                  
+                </tr> 
+                <tr>
+                  <th colSpan="3" style={mystyle}>
+                    <div className="float-right">TOTAL Por derecho de Matrícula</div>
+                  </th>
+                  <th style={mystyle}><center>S/. &nbsp;{this.getTotalMatricula(detalles_matricula,detalles_matricula_epg)}</center></th>
+                  <th style={mystyle}></th>                  
+                </tr>                
+              </tfoot> 
             </table>            
           </div>
         </div>                   

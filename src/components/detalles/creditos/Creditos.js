@@ -6,8 +6,8 @@ class Creditos extends Component {
 			return(
 					<div className="subject form-group">
 							<b>N° de creditos</b>
-							<input type="number" name="creditos" placeholder="" value={this.props.creditos}
-								className="form-control" required min="1" onChange={this.props.onChange}/>						    						
+							<input type="text" name="creditos" placeholder="" value={this.props.form.creditos}
+								className="form-control" required onChange={this.props.onChange}/>						    						
 					</div>
 				)
 		}	
