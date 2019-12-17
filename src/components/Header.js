@@ -17,10 +17,7 @@ class Header extends Component {
 	  }		
 	}
 	reload = () => ( window.location.reload(true) )	
-	toggle = () => {
-		let $bodyHeader = document.getElementById("collapseExample");
-		$bodyHeader.classList.toggle('show');
-	}
+
 	render(){
 
 		return (		
@@ -44,7 +41,7 @@ class Header extends Component {
 										<button type="button" className="btn waves-effect waves-light"
 										 data-toggle="collapse" data-target="#collapseExample"
 										 aria-expanded="false" aria-controls="collapseExample" 
-										 onClick={this.toggle}>
+										 >
 											<i className="material-icons"> visibility</i>
 										</button>
 										&nbsp;
