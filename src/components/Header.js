@@ -17,7 +17,10 @@ class Header extends Component {
 	  }		
 	}
 	reload = () => ( window.location.reload(true) )	
-
+	toggle = () => {
+		let $bodyHeader = document.getElementById("collapseExample");
+		$bodyHeader.classList.toggle('show');
+	}
 	render(){
 
 		return (		
@@ -40,7 +43,8 @@ class Header extends Component {
 									<div className="float-right">
 										<button type="button" className="btn waves-effect waves-light"
 										 data-toggle="collapse" data-target="#collapseExample"
-										 aria-expanded="false" aria-controls="collapseExample">
+										 aria-expanded="false" aria-controls="collapseExample" 
+										 onClick={this.toggle}>
 											<i className="material-icons"> visibility</i>
 										</button>
 										&nbsp;
@@ -107,7 +111,7 @@ class Header extends Component {
 													value={this.props.cuotas} disabled/>						    																																						    			
 											</div>							
 										</div>
-										<div className="col-md-3">
+										<div className="col-md-2">
 											<div className="form-group">
 												 <b> Costo Crédito</b> 									
 												<input type="number" id="costo_credito" className="form-control" placeholder={`Costo crédito`}
@@ -116,9 +120,13 @@ class Header extends Component {
 													disabled={this.props.readOnlyCostoCredito} />	
 											</div>											
 										</div>
-										<div className="col-md-2">
+										<div className="col-md-3">
 											{this.renderBtnRPP(this.props.form.id_programa_presupuesto)}
-											{this.renderBtnEdit_Save(this.props.form.id_programa_presupuesto)}											
+											&nbsp;
+											{this.renderBtnDelete(this.props.form.id_programa_presupuesto,this.props.nro_detalles)}
+											&nbsp;
+											{this.renderBtnEdit_Save(this.props.form.id_programa_presupuesto)}
+											&nbsp;											
 										</div>									
 									</div>	{/*end.row*/}
 								</div>	{/*end.card.body	*/}					
@@ -137,26 +145,39 @@ class Header extends Component {
 							</button>
 		}
 	}
+
+	renderBtnDelete(id_programa_presupuesto,nro_detalles){
+		if ( Number(id_programa_presupuesto) !== -1) {
+			if (Number(nro_detalles)<=0) {
+			return <button className="btn btn-sm btn-danger"
+                  onClick={this.props.btnDeleteHeader} type="button"
+                  >
+                  <i className="large material-icons">delete</i>
+              </button>
+		}
+		}
+
+		
+
+	}
 	renderBtnEdit_Save(id_programa_presupuesto){
 		if ( Number(id_programa_presupuesto) !== -1) {
-			return 	<div>
-											<button className="btn waves-effect waves-light" onClick={this.focus}
-											 type="button">
+			return 	<div className="float-left">
+								<button className="btn waves-effect btn-sm waves-light" onClick={this.focus}
+									type="button">
 												<i className="material-icons">create</i> 
-											</button>
-											&nbsp;
-											<button className="btn waves-effect waves-light" id="save-header"  
-												disabled={this.props.readOnlyCostoCredito}
-
-												>
-												<i className="material-icons">save</i> 
-											</button>
+								</button>
+								&nbsp;
+								<button className="btn waves-effect waves-light btn-sm " id="save-header"  
+												disabled={this.props.readOnlyCostoCredito}>
+									<i className="material-icons">save</i> 
+								</button>
 							</div>
 		}
 	}
 	renderCreate(id_programa_presupuesto){
 		if ( Number(id_programa_presupuesto) !== -1) {
-			return 		<Create 
+			return <Create 
 									  tipo_grado={this.props.tipo_grado}
 										readOnly={this.props.readOnly}
 										readOnlyBtn={this.props.readOnlyBtn}

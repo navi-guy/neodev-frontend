@@ -3,7 +3,8 @@ import axios from 'axios';
 import * as Detalles from './components/detalles';
 import Header from './components/Header';
 import swal from 'sweetalert';
-
+//import {browserHistory} from 'react-router-3';
+import CONFIG from './Configuracion/Config';
 
 class RegistroCostoPrograma extends Component {
 	constructor(){
@@ -20,6 +21,7 @@ class RegistroCostoPrograma extends Component {
 			cuotas: "",
 			importeCalculado: 0,
 			tipo_save: 0,
+			nro_detalles: 0,
 			readOnly: true,
 			readOnlyBtn: true,
 			esDiplomado: false,
@@ -40,6 +42,8 @@ class RegistroCostoPrograma extends Component {
 			}
 		}
 	}
+
+
 
 	handleChange = e =>{
 		this.setState({
@@ -70,14 +74,14 @@ class RegistroCostoPrograma extends Component {
 			if( Number(e.target.value) !== -1 ){
 			  if( Number(e.target.value) === 9 || Number(e.target.value) === 117){
 					this.setState({ readOnlyImporte: false });//MATRICULA					
-				}else{
+					}else{
 					this.setState({ readOnlyImporte: true });//ENSEÑANZA
-				}
-				this.state.conceptos.forEach( (programa) =>{									
-					if( programa.id === Number(e.target.value) ){
-							this.setState( {descripcionConcepto: programa.descripcion } );				  	
+					}			
+					this.state.conceptos.forEach( (concepto) =>{				
+						if( concepto.id === Number(e.target.value) ){
+							this.setState( {descripcionConcepto: concepto.descripcion } );				  	
 				  	}
-				});		
+					});		
 			}else{		 	  	
 				 	this.setState( {descripcionConcepto: "" } ); 	 	
 				}
@@ -172,12 +176,42 @@ class RegistroCostoPrograma extends Component {
 			    }
 			}));
 	}
+/*---------------------------------DELETE HEADER PROGRAMA PRESUPUESTO------------------------------------*/
+	btnDeleteHeader = (e) => {
+		let ciclo_delete =  e.currentTarget.getAttribute('ciclo');
+		let concepto_delete =  Number(e.currentTarget.getAttribute('concepto'));
+		let url ='https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuestos/'
+										+this.state.form.id_programa_presupuesto;
+			swal({
+			  title: "Estás seguro?",
+			  text: "Una vez hayas eliminado, no podrás recuperar el registro!",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			})
+			.then((willDelete) => {
+			  if (willDelete) {
+			    axios.delete(url).then(res => {
+			      	console.log(res);
+			      	window.location.reload(true)				
+							swal("Poof! Tu registro programa presupuesto ha sido eliminado!", {
+								   icon: "success",
+							});       
+			      }).catch(err => {
+			        console.log(err);
+			      });
+  				} else {
+			    swal("Tu registro está seguro!");
+			  }
+			});
+		}
+
 /*---------------------------------DELETE DETALLE PROGRAMA PRESUPUESTO------------------------------------*/
 	btnDeleteDetalle = (e) => {
 
 		let ciclo_delete =  e.currentTarget.getAttribute('ciclo');
 		let concepto_delete =  Number(e.currentTarget.getAttribute('concepto'));
-		let url ='https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuesto-detalles?'
+		let url ='https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuesto-detalles?'
 								+'id-ciclo='+ciclo_delete
 								+'&id-concepto='+concepto_delete
 								+'&id-presupuesto='+this.state.form.id_programa_presupuesto;
@@ -208,8 +242,13 @@ class RegistroCostoPrograma extends Component {
 	handleSubmit = async e =>{
 		e.preventDefault();
 		let tipo_save = e.currentTarget.getAttribute('tipo_save');
+		// this.setState({form: {...this.state.form, costo_total: 0}	} , 
+		// 		function() {
+  //   		console.log(this.state.form.costo_total);
+  // 		}
+  //   );
 	
-			switch (Number(tipo_save) ) {
+			switch ( Number(tipo_save) ) {
 			  case 0:
 			/*----------------------- CREAR HEADER PROGRAMA PRESUPUESTO------------------------------- */
 				console.log( 'create Header Programa presupuesto:',this.state.form);
@@ -224,7 +263,7 @@ class RegistroCostoPrograma extends Component {
 							body: JSON.stringify(this.state.form)
 						}
 						let response = await
-			fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos',config)
+			fetch('https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuestos',config)
 						let json = await response.json()
 						console.log(json);
 					this.setState(prevState => ({
@@ -237,8 +276,10 @@ class RegistroCostoPrograma extends Component {
 					this.setState(prevState => ({			                      
 					        ...prevState,    
 					        readOnlyHeader: true,
-					        readOnlyCostoCredito: true      
+					        readOnlyCostoCredito: true,
+					        tipo_save: 1      
 					}));
+				//	this.changeTipoSave(1);
 					swal("Guardado exitoso!", "", "success");
 					}catch( error ){
 						console.log('ERROR..');
@@ -261,7 +302,7 @@ class RegistroCostoPrograma extends Component {
 						body: JSON.stringify(this.state.form)
 					}
 						let response = await
-		fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos/'+
+		fetch('https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuestos/'+
 			this.state.form.id_programa_presupuesto+'/detalle',config)
 						let json = await response.json()
 						console.log(json);
@@ -284,7 +325,7 @@ class RegistroCostoPrograma extends Component {
 					console.log( 'UPDATE Detalle Programa presupuesto:',this.state.form);
 					try{
 					let config = {
-						method: 'POST',
+						method: 'PUT',
 						headers:{
 							'Accept': 'application/json',
 							'Content-Type': 'application/json'
@@ -293,7 +334,7 @@ class RegistroCostoPrograma extends Component {
 						body: JSON.stringify(this.state.form)
 					}
 						let response = await
-		fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuesto-detalles?id-ciclo='+
+		fetch('https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuesto-detalles?id-ciclo='+
 						this.state.form.id_programa_ciclo+'&id-concepto='+
 						this.state.form.id_concepto+'&id-presupuesto='+this.state.form.id_programa_presupuesto,config)
 						let json = await response.json()
@@ -302,7 +343,10 @@ class RegistroCostoPrograma extends Component {
 							console.log('ERROR..',json.error);
 							swal("Oops, Algo salió mal!!", "", "error");
 						}else{
-							this.clearForm();			
+							//this.clearForm();		
+							this.setState({form: {...this.state.form, importe: ''}	});
+							this.setState({form: {...this.state.form, creditos: 0}	});	
+							this.changeTipoSave(1);
 							this.callProgramaPresupuestoDetalles();		
 							swal("Actualización exitosa!", "", "success");
 						}					
@@ -325,7 +369,7 @@ class RegistroCostoPrograma extends Component {
 						body: JSON.stringify(this.state.form)
 					}
 						let response = await
-		fetch('https://cors-anywhere.herokuapp.com/https://costoprogramas-back.herokuapp.com/presupuestos/'+
+		fetch('https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuestos/'+
 			this.state.form.id_programa_presupuesto,config)
 						let json = await response.json()
 						console.log(json);	
@@ -436,13 +480,21 @@ class RegistroCostoPrograma extends Component {
 
 	callProgramaPresupuestoDetalles = () =>{
 		// Uso tipico (no olvides de comparar los props):https://cors-anywhere.herokuapp.com/
-	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
+	   axios.get(CONFIG+'/presupuestos?idPrograma='
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
-				let readOnlyHeader = false;
+
+				let numeroDetalles = response.data.programaPresupuestoDetalles.length;
+
+				let readOnlyHeader = true;
 				this.setState({readOnlyHeader: readOnlyHeader});
-				this.setState({readOnlyCostoCredito: readOnlyHeader});				
+				this.setState({readOnlyCostoCredito: readOnlyHeader});
+				this.setState({nro_detalles: numeroDetalles
+				}, function() {
+					console.log(numeroDetalles);
+				})				
 				this.setState({ programaPresupuesto: response.data })		  	  
+				//console.log('call again programaPresupuesto',response.data)
 				console.log('call again programaPresupuesto',response.data)
 				this.setState( {
 					form: {
@@ -460,7 +512,7 @@ class RegistroCostoPrograma extends Component {
 	  if (this.state.form.id_programa !== prevState.form.id_programa
 	   || this.state.form.id_programacion_pagos!== prevState.form.id_programacion_pagos ) {
 	  //	console.log(this.state.form.id_programacion_pagos)
-	   axios.get('https://costoprogramas-back.herokuapp.com/presupuestos?idPrograma='
+	   axios.get(CONFIG+'presupuestos?idPrograma='
 	   		+this.state.form.id_programa+'&idProgramacionPago='+this.state.form.id_programacion_pagos)		
 			.then(response => {
 				
@@ -478,7 +530,15 @@ class RegistroCostoPrograma extends Component {
 							costo_credito: response.data.costoCredito,
 							id_programa_presupuesto: response.data.id 
 						}
+					})
+					let numeroDetalles = response.data.programaPresupuestoDetalles.length;
+
+					this.setState( {						
+							...this.state,
+							tipo_save: 1	,
+							nro_detalles: numeroDetalles
 					})	
+					
  					let $bodyHeader = document.getElementById("collapseExample");
 					$bodyHeader.classList.toggle('show');
 			  }	
@@ -490,36 +550,44 @@ class RegistroCostoPrograma extends Component {
 	}
 
 	componentDidMount(){
-		axios.get('https://costoprogramas-back.herokuapp.com/programas',{ crossdomain: true })
+		axios.get(CONFIG+'/programas',{ crossdomain: true })
 		.then(response => {
 			this.setState({ programas: response.data })			
 		})
 		.catch( error =>{ console.log(error) 
 		});
 
-		axios.get('https://costoprogramas-back.herokuapp.com/programacion-pagos',{ crossdomain: true })
+		axios.get(CONFIG+'/programacion-pagos',{ crossdomain: true })
 		.then(response => {
 			this.setState({ programaciones: response.data })			
 		})
 		.catch( error =>{ console.log(error) 
-		});		
+		});	
 
-		axios.get('https://costoprogramas-back.herokuapp.com/conceptos',{ crossdomain: true })
+		axios.get(CONFIG+'/conceptos',{ crossdomain: true })
 		.then(response => {
-
-		    let concepto_all = response.data|| [] ;
-		    concepto_all = Array.from(concepto_all);
+		    let concepto_all = (response)?response.data:[] ;
+		    concepto_all = Array.from(concepto_all);//convert from nodeList to array
 		    let conceptos_filtrados = 
-		    concepto_all!==[]?concepto_all.filter(concepto => 
+		   		 concepto_all!==[]?concepto_all.filter(concepto => 
 		    	(concepto.concepto === "210024  " || concepto.concepto === "210011  "
 		    			|| concepto.concepto === "210010  " || concepto.concepto === "207010  ")):[];
-					this.setState({ conceptos: conceptos_filtrados })			
-				})
-				.catch( error =>{ console.log(error) 
-				});
+			this.setState({ conceptos: conceptos_filtrados })	    
+		   		
+		})
+		.catch( error =>{ console.log(error) 
+		});	
+
+	}
+
+	regresar=(e)=>{    
+    //browserHistory.push('/');
+    e.preventDefault();    
 	}
 	render(){
 	//console.log('tipo save',this.state.tipo_save);
+	console.log('nro detalles',this.state.nro_detalles);
+	//console.log('Tipo grado  ', this.state.form.id_programa_presupuesto );
 		const mystyle = {
 			backgroundColor:'black',
 			color:  'lightblue',
@@ -531,15 +599,17 @@ class RegistroCostoPrograma extends Component {
 			fontWeight: 'bold',
 			fontFamily: 'Exo',
 		};
-		//console.log('Tipo grado  ', this.state.form.creditos );
+		
 		return (
 				<div className="app">
 					<h3 style={mystyle}
 							> Registro Costo de Programas
 	            <ul id="nav-mobile" className="right  hide-on-med-and-down">
 	              <li >
-	                  Regresar
-	                  <i className="material-icons right" style={{fontSize: '40px'}}>reply</i>
+	                <a className="seleccionar" onClick={this.regresar} >
+                  	Regresar
+                  	<i className="material-icons right"  style={{fontSize: '40px'}}>reply</i>
+                	</a>
 	              </li>
 	            </ul>
 	        </h3>
@@ -567,7 +637,9 @@ class RegistroCostoPrograma extends Component {
 											readOnlyCostoCredito = {this.state.readOnlyCostoCredito}
 											btnAddCreate = {this.addCreate}
 											tipo_save = {this.state.tipo_save}
-											changeTipoSave = {this.changeTipoSave}											
+											changeTipoSave = {this.changeTipoSave}
+											btnDeleteHeader = {this.btnDeleteHeader}
+											nro_detalles ={this.state.nro_detalles}											
 											>						
 						</Header>
 						<div className="card">
@@ -595,7 +667,7 @@ renderSelectedForm( tipo_grado ){
 			return <Detalle 
 			programaDetalle={this.state.programaPresupuesto.programaPresupuestoDetalles}
 			btnEdit = {this.createEditableMatricula}
-			btnDeleteDetalle = {this.btnDeleteDetalle}
+			btnDeleteDetalle = {this.btnDeleteDetalle}			
 			/>
 		}		
 	}
