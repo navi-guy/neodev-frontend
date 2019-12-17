@@ -178,8 +178,7 @@ class RegistroCostoPrograma extends Component {
 	}
 /*---------------------------------DELETE HEADER PROGRAMA PRESUPUESTO------------------------------------*/
 	btnDeleteHeader = (e) => {
-		let ciclo_delete =  e.currentTarget.getAttribute('ciclo');
-		let concepto_delete =  Number(e.currentTarget.getAttribute('concepto'));
+	
 		let url ='https://cors-anywhere.herokuapp.com/'+CONFIG+'/presupuestos/'
 										+this.state.form.id_programa_presupuesto;
 			swal({
@@ -194,7 +193,7 @@ class RegistroCostoPrograma extends Component {
 			    axios.delete(url).then(res => {
 			      	console.log(res);
 			      	window.location.reload(true)				
-							swal("Poof! Tu registro programa presupuesto ha sido eliminado!", {
+							swal("Poof! El Programa presupuesto ha sido eliminado!", {
 								   icon: "success",
 							});       
 			      }).catch(err => {
@@ -580,13 +579,9 @@ class RegistroCostoPrograma extends Component {
 
 	}
 
-	regresar=(e)=>{    
-    //browserHistory.push('/');
-    e.preventDefault();    
-	}
 	render(){
 	//console.log('tipo save',this.state.tipo_save);
-	console.log('nro detalles',this.state.nro_detalles);
+	//console.log('nro detalles',this.state.nro_detalles);
 	//console.log('Tipo grado  ', this.state.form.id_programa_presupuesto );
 		const mystyle = {
 			backgroundColor:'black',
@@ -604,14 +599,6 @@ class RegistroCostoPrograma extends Component {
 				<div className="app">
 					<h3 style={mystyle}
 							> Registro Costo de Programas
-	            <ul id="nav-mobile" className="right  hide-on-med-and-down">
-	              <li >
-	                <a className="seleccionar" onClick={this.regresar} >
-                  	Regresar
-                  	<i className="material-icons right"  style={{fontSize: '40px'}}>reply</i>
-                	</a>
-	              </li>
-	            </ul>
 	        </h3>
 	        <div className="container-fluid">
 						<Header tipo_grado={this.state.tipo_grado}
